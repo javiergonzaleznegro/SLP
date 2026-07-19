@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0C1B2A">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Bitácora SLP</title>
+<style>
+:root{
+  --ink:#0C1B2A;        /* azul carta náutica, fondo */
+  --panel:#13283C;      /* paneles */
+  --line:#24405A;       /* líneas y bordes */
+  --ivory:#EFE7D6;      /* texto principal */
+  --faded:#7FA3C0;      /* texto secundario */
+  --brass:#C9A063;      /* latón: acento e instrumento */
+  --ok:#4CAF7D;         /* verde señal */
+  --bad:#C75B4E;        /* rojo señal */
+  --disp:Futura,'Avenir Next Condensed','Trebuchet MS',sans-serif;
+  --body:'Avenir Next',Avenir,-apple-system,'Segoe UI',sans-serif;
+  --serif:Georgia,'Times New Roman',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--ink)}
+body{
+  font-family:var(--body);color:var(--ivory);background:var(--ink);
+  background-image:radial-gradient(1200px 600px at 50% -200px,#16304a 0%,var(--ink) 70%);
+  min-height:100vh;padding:env(safe-area-inset-top) 0 40px;
+}
+.wrap{max-width:520px;margin:0 auto;padding:0 16px}
+header{padding:18px 0 10px;text-align:center;border-bottom:1px solid var(--line)}
+.brand{font-family:var(--disp);letter-spacing:.32em;font-size:13px;color:var(--brass);text-transform:uppercase}
+.brand small{display:block;letter-spacing:.18em;color:var(--faded);font-size:10px;margin-top:4px}
+h2{font-family:var(--disp);font-weight:500;letter-spacing:.14em;text-transform:uppercase;font-size:15px;color:var(--brass);margin:22px 0 12px}
+.sub{color:var(--faded);font-size:14px;line-height:1.5}
+
+/* ---------- instrumento de puntos ---------- */
+.gauge{display:flex;justify-content:center;margin:24px 0 8px}
+.dial{position:relative;width:190px;height:190px}
+.dial svg{position:absolute;inset:0}
+.dial .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dial .num b{font-family:var(--disp);font-weight:600;font-size:52px;letter-spacing:.02em;color:var(--ivory)}
+.dial .num span{font-family:var(--disp);font-size:10px;letter-spacing:.3em;color:var(--brass);text-transform:uppercase;margin-top:2px}
+.stats{display:flex;gap:10px;margin:14px 0 20px}
+.stat{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center}
+.stat b{display:block;font-family:var(--disp);font-size:22px;font-weight:600}
+.stat span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faded)}
+
+/* ---------- botones ---------- */
+.menu{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+button{font-family:var(--body);cursor:pointer;border:none;border-radius:14px;font-size:16px;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.big{display:flex;justify-content:space-between;align-items:center;width:100%;
+  background:var(--panel);border:1px solid var(--line);color:var(--ivory);
+  padding:16px 18px;min-height:56px;text-align:left}
+.big .n{font-family:var(--disp);color:var(--brass);font-size:18px;font-weight:600}
+.big:active{background:#1a3350}
+.primary{background:var(--brass);color:#20180b;font-weight:600;padding:15px;width:100%;min-height:52px}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--faded);padding:13px;width:100%;min-height:48px}
+.okbtn{background:var(--ok);color:#0b2416;font-weight:600;padding:15px;flex:1;min-height:52px}
+.badbtn{background:var(--bad);color:#2b0f0b;font-weight:600;padding:15px;flex:1;min-height:52px}
+.row{display:flex;gap:10px}
+.back{background:none;color:var(--faded);font-size:14px;padding:14px 0;letter-spacing:.1em;text-transform:uppercase;font-family:var(--disp)}
+
+/* ---------- fichas ---------- */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:14px}
+.levelrow{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.chev{display:flex;gap:3px}
+.chev i{width:14px;height:8px;background:var(--line);display:block;transform:skewX(-18deg);border-radius:2px}
+.chev i.on{background:var(--brass)}
+.chev i.star{width:10px;height:10px;transform:none;border-radius:50%}
+.lvltxt{font-family:var(--disp);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--faded)}
+.dirpill{margin-left:auto;font-family:var(--disp);font-size:10px;letter-spacing:.14em;color:var(--ink);
+  background:var(--faded);border-radius:20px;padding:3px 9px}
+.word{font-size:27px;font-weight:600;line-height:1.2}
+.ipa{font-family:var(--serif);color:var(--brass);font-size:17px;margin-top:2px}
+.sense{display:inline-block;font-size:12px;color:var(--faded);border:1px solid var(--line);border-radius:20px;padding:2px 10px;margin-top:8px}
+.phrase{font-family:var(--serif);font-size:17px;line-height:1.5;margin-top:12px}
+.phrase.es{color:var(--faded)}
+.speak{background:transparent;border:1px solid var(--brass);color:var(--brass);border-radius:24px;
+  padding:7px 16px;font-size:14px;margin-top:12px}
+.divider{border-top:1px dashed var(--line);margin:16px 0}
+.progress{font-family:var(--disp);font-size:11px;letter-spacing:.2em;color:var(--faded);text-transform:uppercase;text-align:center;margin:14px 0}
+.hint{font-size:13px;color:var(--faded);margin-top:8px;line-height:1.5}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--brass);color:#20180b;
+  font-weight:600;border-radius:24px;padding:10px 22px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9}
+.toast.show{opacity:1}
+textarea{width:100%;min-height:110px;background:var(--ink);border:1px solid var(--line);border-radius:12px;
+  color:var(--ivory);font-family:Menlo,monospace;font-size:12px;padding:10px;margin:8px 0}
+.hidden{display:none}
+.assocbtn{background:transparent;border:1px dashed var(--brass);color:var(--brass);border-radius:24px;
+  padding:8px 16px;font-size:14px;margin-top:12px;width:100%}
+.assoc{margin-top:12px;background:#0e2033;border:1px solid var(--line);border-left:3px solid var(--brass);
+  border-radius:0 12px 12px 0;padding:14px 16px}
+.amn{margin:0 0 12px;font-family:var(--serif);font-size:15px;line-height:1.55;color:var(--ivory)}
+.amn:last-child{margin-bottom:0}
+.amn span{display:block;font-family:var(--disp);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);margin-bottom:3px}
+.seen{font-family:var(--disp);font-size:10px;letter-spacing:.1em;color:var(--faded);margin-left:auto;text-transform:uppercase}
+.tcount{text-align:center;font-family:var(--disp);font-size:11px;letter-spacing:.14em;color:var(--faded);text-transform:uppercase;margin-top:14px}
+.empty{text-align:center;color:var(--faded);padding:40px 10px;font-family:var(--serif);font-style:italic;font-size:16px;line-height:1.6}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Bitácora SLP<small>Cuaderno de vocabulario · 3.3.3.3</small></div>
+  </header>
+  <main id="app"></main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= DATOS INICIALES ================= */
+const SEED = [
+{id:"underway-nav",en:"underway",es:"en marcha, navegando",sense:"náutico: hacerse a la mar",ipa:"/ˌʌndəˈweɪ/",fen:"The ship got underway at dawn.",fes:"El buque se hizo a la mar al amanecer."},
+{id:"underway-gen",en:"underway",es:"en curso, en desarrollo",sense:"general: algo que ya ha empezado",ipa:"/ˌʌndəˈweɪ/",fen:"A new training programme is underway.",fes:"Un nuevo programa de instrucción está en curso."},
+{id:"watch-guard",en:"watch",es:"guardia",sense:"turno de servicio a bordo",ipa:"/wɒtʃ/",fen:"I am on watch from midnight to four.",fes:"Estoy de guardia de doce a cuatro."},
+{id:"drill-sim",en:"drill",es:"simulacro, ejercicio",sense:"práctica de adiestramiento",ipa:"/drɪl/",fen:"We ran a fire drill before getting underway.",fes:"Hicimos un simulacro de incendio antes de zarpar."},
+{id:"drill-tool",en:"drill",es:"taladro",sense:"herramienta",ipa:"/drɪl/",fen:"You will need a drill to fix that bracket.",fes:"Necesitarás un taladro para fijar ese soporte."},
+{id:"vessel",en:"vessel",es:"buque, embarcación",sense:"término formal",ipa:"/ˈvesl/",fen:"All vessels must report their position.",fes:"Todos los buques deben comunicar su posición."},
+{id:"readiness",en:"readiness",es:"alistamiento, disponibilidad",sense:"estado de preparación",ipa:"/ˈredinəs/",fen:"The crew maintained a high state of readiness.",fes:"La dotación mantuvo un alto grado de alistamiento."},
+{id:"deploy",en:"deploy",es:"desplegar",sense:"enviar fuerzas o medios",ipa:"/dɪˈplɔɪ/",fen:"The unit was deployed overseas for six months.",fes:"La unidad fue desplegada en el extranjero seis meses."},
+{id:"deterrence",en:"deterrence",es:"disuasión",sense:"estrategia de defensa",ipa:"/dɪˈterəns/",fen:"Nuclear deterrence remains a pillar of NATO strategy.",fes:"La disuasión nuclear sigue siendo un pilar de la estrategia de la OTAN."},
+{id:"chain-command",en:"chain of command",es:"cadena de mando",sense:"jerarquía militar",ipa:"/tʃeɪn əv kəˈmɑːnd/",fen:"Report the issue through the chain of command.",fes:"Comunica el problema por la cadena de mando."},
+{id:"roe",en:"rules of engagement",es:"reglas de enfrentamiento",sense:"normas de uso de la fuerza",ipa:"/ruːlz əv ɪnˈɡeɪdʒmənt/",fen:"The rules of engagement were briefed before the mission.",fes:"Las reglas de enfrentamiento se expusieron antes de la misión."},
+{id:"briefing",en:"briefing",es:"reunión informativa, exposición",sense:"antes de una actividad",ipa:"/ˈbriːfɪŋ/",fen:"Attendance at the morning briefing is mandatory.",fes:"La asistencia a la reunión informativa matinal es obligatoria."},
+{id:"liaison",en:"liaison",es:"enlace",sense:"persona o función de coordinación",ipa:"/liˈeɪzɒn/",fen:"She acts as liaison between both navies.",fes:"Ella actúa de enlace entre ambas armadas."},
+{id:"overhaul",en:"overhaul",es:"revisión general, puesta a punto",sense:"mantenimiento a fondo",ipa:"/ˈəʊvəhɔːl/",fen:"The engine needs a complete overhaul.",fes:"El motor necesita una revisión general completa."},
+{id:"seamanship",en:"seamanship",es:"marinería, arte de navegar",sense:"destreza del marino",ipa:"/ˈsiːmənʃɪp/",fen:"Good seamanship prevented a collision.",fes:"La buena marinería evitó un abordaje."},
+{id:"convey",en:"convey",es:"transmitir",sense:"una idea o sensación",ipa:"/kənˈveɪ/",fen:"It is hard to convey how demanding sea duty is.",fes:"Es difícil transmitir lo exigente que es el servicio en la mar."},
+{id:"grasp-und",en:"grasp",es:"comprender, captar",sense:"entender una idea",ipa:"/ɡrɑːsp/",fen:"It took me a while to grasp the concept.",fes:"Tardé un poco en captar el concepto."},
+{id:"grasp-hold",en:"grasp",es:"agarrar, asir",sense:"sujetar con la mano",ipa:"/ɡrɑːsp/",fen:"He grasped the rail as the ship rolled.",fes:"Se agarró al pasamanos cuando el buque dio un balance.",assoc:{bridge:"grapa",scene:"Hulk, furioso y verde, AGARRA una grapadora del tamaño de un autobús. De un puñetazo clava una GRAPA de acero que une dos rascacielos, y luego se agarra él mismo a un puente con las dos manos para no caer.",funny:"La grapa es tan grande que las palomas la usan de tobogán.",recall:"El agarre bestial de Hulk sujetando la grapa es grasp: agarrar con fuerza.",why:"«grasp» suena a «grap(a)»; el agarre potente fija el significado."}},
+{id:"foster",en:"foster",es:"fomentar",sense:"favorecer el desarrollo de algo",ipa:"/ˈfɒstə/",fen:"Sport fosters discipline and teamwork.",fes:"El deporte fomenta la disciplina y el trabajo en equipo.",assoc:{bridge:"fósforo",scene:"Un jardinero enciende un FÓSFORO diminuto y lo acerca a una semilla. Al instante brota un bosque entero a cámara rápida: árboles disparándose al cielo, flores explotando de colores, lianas trepando por todas partes.",funny:"El jardinero sale volando por los aires montado en un girasol de treinta metros que no para de crecer.",recall:"El fósforo que hace crecer todo de golpe es foster: fomentar, hacer crecer.",why:"«foster» suena a «fósfor(o)»; la explosión de crecimiento representa «fomentar»."}},
+{id:"hone",en:"hone",es:"perfeccionar, pulir",sense:"una destreza",ipa:"/həʊn/",fen:"I am honing my writing skills for the exam.",fes:"Estoy puliendo mi expresión escrita para el examen.",assoc:{bridge:"jonrón (home run)",scene:"Un samurái afila su katana una y otra vez sobre una piedra, obsesionado, durante años. Cuando por fin está perfecta, batea una pelota de béisbol y hace un JONRÓN que manda la bola a la Luna.",funny:"La espada está tan pulida que el samurái se peina mirándose en el filo antes de cada golpe.",recall:"Afilar hasta la perfección para clavar el jonrón es hone: perfeccionar, pulir.",why:"«hone» suena al «hon-» de «jonrón/home run»; afilar la katana representa «pulir una destreza»."}},
+{id:"strive",en:"strive",es:"esforzarse",sense:"por conseguir algo",ipa:"/straɪv/",fen:"We strive to improve a little every day.",fes:"Nos esforzamos por mejorar un poco cada día.",assoc:{bridge:"estribo",scene:"Un jinete diminuto intenta subir a un caballo de diez metros de alto. Se agarra al ESTRIBO gigante y trepa con todas sus fuerzas: suda a chorros, resopla, los músculos a punto de reventar, mientras el caballo relincha impaciente.",funny:"Cada vez que resbala, cae sobre un montón de heno y vuelve a empezar, ya con siete pares de zapatillas rotas.",recall:"Ese esfuerzo sobrehumano por subir al estribo es strive: esforzarse al límite.",why:"«strive» suena a «estribo», y la imagen del esfuerzo brutal ancla el significado."}},
+{id:"address-issue",en:"address",es:"abordar, tratar",sense:"un problema o asunto",ipa:"/əˈdres/",fen:"The report fails to address the real issue.",fes:"El informe no aborda el problema de fondo."},
+{id:"address-speak",en:"address",es:"dirigirse a",sense:"hablar ante un grupo",ipa:"/əˈdres/",fen:"The admiral addressed the crew before departure.",fes:"El almirante se dirigió a la dotación antes de la salida."},
+{id:"issue-problem",en:"issue",es:"asunto, problema",sense:"cuestión a tratar",ipa:"/ˈɪʃuː/",fen:"Fatigue is a serious issue on long deployments.",fes:"La fatiga es un problema serio en despliegues largos."},
+{id:"issue-give",en:"issue",es:"entregar, distribuir",sense:"material o equipo oficial",ipa:"/ˈɪʃuː/",fen:"New uniforms were issued to the whole crew.",fes:"Se entregaron uniformes nuevos a toda la dotación."},
+{id:"account-explain",en:"account for",es:"explicar, justificar",sense:"dar razón de algo",ipa:"/əˈkaʊnt fɔː/",fen:"How do you account for the delay?",fes:"¿Cómo explicas el retraso?"},
+{id:"account-share",en:"account for",es:"representar, suponer",sense:"una parte o proporción",ipa:"/əˈkaʊnt fɔː/",fen:"Fuel accounts for a third of the budget.",fes:"El combustible representa un tercio del presupuesto."},
+{id:"carry-out",en:"carry out",es:"llevar a cabo, realizar",sense:"una tarea o plan",ipa:"/ˈkæri aʊt/",fen:"The inspection was carried out last week.",fes:"La inspección se llevó a cabo la semana pasada."},
+{id:"comply",en:"comply with",es:"cumplir, acatar",sense:"una norma u orden",ipa:"/kəmˈplaɪ wɪð/",fen:"All personnel must comply with safety regulations.",fes:"Todo el personal debe cumplir las normas de seguridad."},
+{id:"assess",en:"assess",es:"evaluar, valorar",sense:"analizar una situación",ipa:"/əˈses/",fen:"We need to assess the damage before sailing.",fes:"Tenemos que evaluar los daños antes de navegar."},
+{id:"nevertheless",en:"nevertheless",es:"no obstante, sin embargo",sense:"conector formal de contraste",ipa:"/ˌnevəðəˈles/",fen:"The sea was rough; nevertheless, we completed the exercise.",fes:"La mar estaba dura; no obstante, completamos el ejercicio."},
+{id:"furthermore",en:"furthermore",es:"además, es más",sense:"conector formal de adición",ipa:"/ˌfɜːðəˈmɔː/",fen:"Furthermore, the new system reduces fuel consumption.",fes:"Además, el nuevo sistema reduce el consumo de combustible."},
+{id:"albeit",en:"albeit",es:"aunque, si bien",sense:"concesivo culto",ipa:"/ɔːlˈbiːɪt/",fen:"It was a useful course, albeit a demanding one.",fes:"Fue un curso útil, aunque exigente."},
+{id:"notwithstanding",en:"notwithstanding",es:"a pesar de, pese a",sense:"concesivo formal",ipa:"/ˌnɒtwɪθˈstændɪŋ/",fen:"Notwithstanding the weather, the drill went ahead.",fes:"A pesar del tiempo, el simulacro siguió adelante."},
+{id:"hence",en:"hence",es:"por lo tanto, de ahí",sense:"consecuencia formal",ipa:"/hens/",fen:"The radar failed; hence the delay.",fes:"El radar falló; de ahí el retraso."},
+{id:"even-though",en:"even though",es:"aun cuando, a pesar de que",sense:"concesivo con hechos reales",ipa:"/ˈiːvn ðəʊ/",fen:"Even though I was exhausted, I kept studying.",fes:"Aun estando agotado, seguí estudiando."},
+{id:"some-extent",en:"to some extent",es:"hasta cierto punto",sense:"matizar una afirmación",ipa:"/tə sʌm ɪkˈstent/",fen:"To some extent, I agree with that view.",fes:"Hasta cierto punto, coincido con esa opinión."},
+{id:"arguably",en:"arguably",es:"posiblemente, podría decirse",sense:"opinión defendible",ipa:"/ˈɑːɡjuəbli/",fen:"It is arguably the best warship of its class.",fes:"Es posiblemente el mejor buque de guerra de su clase."},
+{id:"could-argued",en:"it could be argued that",es:"podría argumentarse que",sense:"introducir opinión con cautela",ipa:"/ɪt kʊd bi ˈɑːɡjuːd ðæt/",fen:"It could be argued that discipline matters more than talent.",fes:"Podría argumentarse que la disciplina importa más que el talento."},
+{id:"as-far",en:"as far as I am concerned",es:"por lo que a mí respecta",sense:"opinión personal marcada",ipa:"/əz fɑːr əz aɪm kənˈsɜːnd/",fen:"As far as I am concerned, the plan is sound.",fes:"Por lo que a mí respecta, el plan es sólido."},
+{id:"by-large",en:"by and large",es:"en líneas generales",sense:"valoración global",ipa:"/baɪ ənd lɑːdʒ/",fen:"By and large, the deployment was a success.",fes:"En líneas generales, el despliegue fue un éxito."},
+{id:"inclined",en:"I am inclined to think",es:"me inclino a pensar",sense:"opinión prudente",ipa:"/aɪm ɪnˈklaɪnd tə θɪŋk/",fen:"I am inclined to think we should postpone it.",fes:"Me inclino a pensar que deberíamos posponerlo."},
+{id:"actually",en:"actually",es:"en realidad, de hecho",sense:"falso amigo: no significa actualmente",ipa:"/ˈæktʃuəli/",fen:"Actually, the exam is harder than people say.",fes:"En realidad, el examen es más difícil de lo que dicen."},
+{id:"eventually",en:"eventually",es:"finalmente, con el tiempo",sense:"falso amigo: no significa eventualmente",ipa:"/ɪˈventʃuəli/",fen:"Eventually, all that reading pays off.",fes:"Con el tiempo, toda esa lectura da fruto."},
+{id:"currently",en:"currently",es:"actualmente",sense:"en el momento presente",ipa:"/ˈkʌrəntli/",fen:"I am currently preparing for the SLP exam.",fes:"Actualmente me estoy preparando para el examen SLP."},
+{id:"bear-mind",en:"bear in mind",es:"tener en cuenta",sense:"no olvidar algo al decidir",ipa:"/beər ɪn maɪnd/",fen:"Bear in mind that the interview is the hardest part.",fes:"Ten en cuenta que la entrevista es la parte más difícil."},
+{id:"take-account",en:"take into account",es:"tener en cuenta, considerar",sense:"incluir un factor en el análisis",ipa:"/teɪk ˈɪntu əˈkaʊnt/",fen:"The plan takes weather conditions into account.",fes:"El plan tiene en cuenta las condiciones meteorológicas."},
+{id:"long-run",en:"in the long run",es:"a la larga",sense:"con el paso del tiempo",ipa:"/ɪn ðə lɒŋ rʌn/",fen:"Daily reading pays off in the long run.",fes:"Leer a diario compensa a la larga."},
+{id:"at-stake",en:"at stake",es:"en juego",sense:"lo que se arriesga",ipa:"/ət steɪk/",fen:"The safety of the crew is at stake.",fes:"La seguridad de la dotación está en juego."},
+{id:"on-whole",en:"on the whole",es:"en conjunto, en general",sense:"valoración global",ipa:"/ɒn ðə həʊl/",fen:"On the whole, the results were encouraging.",fes:"En conjunto, los resultados fueron alentadores."},
+{id:"come-up",en:"come up with",es:"dar con, proponer",sense:"una idea o solución",ipa:"/kʌm ʌp wɪð/",fen:"We need to come up with a better solution.",fes:"Tenemos que dar con una solución mejor."},
+{id:"deal-with",en:"deal with",es:"afrontar, ocuparse de",sense:"un problema o situación",ipa:"/diːl wɪð/",fen:"Officers must deal with pressure calmly.",fes:"Los oficiales deben afrontar la presión con calma."},
+{id:"cope-with",en:"cope with",es:"sobrellevar, arreglárselas con",sense:"algo difícil o prolongado",ipa:"/kəʊp wɪð/",fen:"It is not easy to cope with long periods at sea.",fes:"No es fácil sobrellevar largos periodos en la mar."},
+{id:"figure-out",en:"figure out",es:"entender, resolver",sense:"tras pensarlo",ipa:"/ˈfɪɡər aʊt/",fen:"I finally figured out how the system works.",fes:"Por fin entendí cómo funciona el sistema."},
+{id:"look-forward",en:"look forward to",es:"tener ganas de, esperar con interés",sense:"ojo: va seguido de -ing",ipa:"/lʊk ˈfɔːwəd tə/",fen:"I look forward to hearing from you.",fes:"Quedo a la espera de sus noticias."},
+{id:"be-used-to",en:"be used to",es:"estar acostumbrado a",sense:"ojo: va seguido de -ing",ipa:"/bi juːst tə/",fen:"I am used to getting up early.",fes:"Estoy acostumbrado a madrugar."},
+{id:"get-used-to",en:"get used to",es:"acostumbrarse a",sense:"ojo: va seguido de -ing",ipa:"/ɡet juːst tə/",fen:"You soon get used to sleeping on board.",fes:"Pronto te acostumbras a dormir a bordo."},
+{id:"carry-on",en:"carry on",es:"continuar, seguir",sense:"con una actividad",ipa:"/ˈkæri ɒn/",fen:"Carry on with the exercise as planned.",fes:"Continuad el ejercicio según lo previsto."},
+{id:"take-over",en:"take over",es:"asumir el mando, hacerse cargo",sense:"relevar a alguien",ipa:"/teɪk ˈəʊvə/",fen:"The executive officer took over the watch.",fes:"El segundo comandante se hizo cargo de la guardia."},
+{id:"break-down-mech",en:"break down",es:"averiarse",sense:"una máquina",ipa:"/breɪk daʊn/",fen:"The generator broke down during the night.",fes:"El generador se averió durante la noche."},
+{id:"break-down-pers",en:"break down",es:"venirse abajo",sense:"una persona, emocionalmente",ipa:"/breɪk daʊn/",fen:"Do not break down under pressure; breathe and think.",fes:"No te vengas abajo bajo presión; respira y piensa."},
+{id:"run-out",en:"run out of",es:"quedarse sin",sense:"agotar existencias",ipa:"/rʌn aʊt əv/",fen:"We are running out of fresh water.",fes:"Nos estamos quedando sin agua dulce."},
+{id:"make-up-for",en:"make up for",es:"compensar",sense:"una pérdida o carencia",ipa:"/meɪk ʌp fɔː/",fen:"Extra study at weekends makes up for lost days.",fes:"Estudiar más los fines de semana compensa los días perdidos."},
+{id:"put-off",en:"put off",es:"aplazar, posponer",sense:"dejar para más tarde",ipa:"/pʊt ɒf/",fen:"Do not put off writing practice until the weekend.",fes:"No aplaces la práctica de escritura hasta el fin de semana."},
+{id:"turn-out",en:"turn out",es:"resultar",sense:"acabar siendo",ipa:"/tɜːn aʊt/",fen:"The drill turned out to be more useful than expected.",fes:"El simulacro resultó más útil de lo esperado."},
+{id:"keep-up",en:"keep up with",es:"seguir el ritmo de",sense:"no quedarse atrás",ipa:"/kiːp ʌp wɪð/",fen:"It is hard to keep up with new technology.",fes:"Es difícil seguir el ritmo de la nueva tecnología."},
+{id:"stand-out",en:"stand out",es:"destacar, sobresalir",sense:"por encima del resto",ipa:"/stænd aʊt/",fen:"Her report stood out for its clarity.",fes:"Su informe destacó por su claridad."},
+{id:"point-out",en:"point out",es:"señalar, hacer notar",sense:"llamar la atención sobre algo",ipa:"/pɔɪnt aʊt/",fen:"The instructor pointed out two common mistakes.",fes:"El instructor señaló dos errores comunes."},
+{id:"rule-out",en:"rule out",es:"descartar",sense:"una posibilidad",ipa:"/ruːl aʊt/",fen:"We cannot rule out a change of plans.",fes:"No podemos descartar un cambio de planes."},
+{id:"draw-up",en:"draw up",es:"redactar, elaborar",sense:"un plan o documento",ipa:"/drɔː ʌp/",fen:"The staff drew up a detailed schedule.",fes:"El estado mayor elaboró un programa detallado."},
+{id:"set-up",en:"set up",es:"establecer, montar",sense:"crear algo nuevo",ipa:"/set ʌp/",fen:"They set up a command post ashore.",fes:"Montaron un puesto de mando en tierra."},
+{id:"set-out-goal",en:"set out",es:"proponerse",sense:"empezar con un objetivo",ipa:"/set aʊt/",fen:"I set out to master one expression a day.",fes:"Me propuse dominar una expresión al día."},
+{id:"undergo",en:"undergo",es:"someterse a, experimentar",sense:"un proceso o cambio",ipa:"/ˌʌndəˈɡəʊ/",fen:"The ship will undergo sea trials next month.",fes:"El buque se someterá a pruebas de mar el mes que viene."},
+{id:"undertake",en:"undertake",es:"emprender, acometer",sense:"una tarea importante",ipa:"/ˌʌndəˈteɪk/",fen:"The navy undertook a major modernisation.",fes:"La armada acometió una gran modernización."},
+{id:"enhance",en:"enhance",es:"mejorar, potenciar",sense:"aumentar la calidad de algo",ipa:"/ɪnˈhɑːns/",fen:"Training enhances both confidence and skill.",fes:"El adiestramiento potencia la confianza y la destreza."},
+{id:"hinder",en:"hinder",es:"dificultar, entorpecer",sense:"frenar un avance",ipa:"/ˈhɪndə/",fen:"Poor visibility hindered the operation.",fes:"La escasa visibilidad dificultó la operación.",assoc:{bridge:"hindú",scene:"Un elefante HINDÚ colosal, cubierto de joyas, se sienta plácidamente en mitad de una autopista de ocho carriles. Nadie puede pasar: se forma un atasco de mil coches que pitan mientras el elefante se abanica con las orejas, tan tranquilo.",funny:"Reparte té a los conductores atrapados mientras la cola llega hasta el horizonte.",recall:"El elefante hindú que bloquea el paso es hinder: dificultar, entorpecer.",why:"«hinder» suena a «hindú»; el estorbo gigante fija «dificultar»."}},
+{id:"tackle",en:"tackle",es:"abordar, atajar",sense:"un problema con decisión",ipa:"/ˈtækl/",fen:"We must tackle the problem at its root.",fes:"Debemos atajar el problema de raíz."},
+{id:"overcome",en:"overcome",es:"superar, vencer",sense:"una dificultad",ipa:"/ˌəʊvəˈkʌm/",fen:"She overcame her fear of speaking in public.",fes:"Superó su miedo a hablar en público."},
+{id:"accomplish",en:"accomplish",es:"lograr, cumplir",sense:"un objetivo o misión",ipa:"/əˈkʌmplɪʃ/",fen:"The mission was accomplished without incident.",fes:"La misión se cumplió sin incidentes."},
+{id:"drawback",en:"drawback",es:"inconveniente, desventaja",sense:"punto débil de un plan",ipa:"/ˈdrɔːbæk/",fen:"The main drawback is the cost.",fes:"El principal inconveniente es el coste."},
+{id:"asset",en:"asset",es:"baza, activo",sense:"algo valioso que se posee",ipa:"/ˈæset/",fen:"Language skills are a real asset in NATO posts.",fes:"Los idiomas son una verdadera baza en puestos OTAN."},
+{id:"outcome",en:"outcome",es:"resultado, desenlace",sense:"de un proceso",ipa:"/ˈaʊtkʌm/",fen:"The outcome of the talks is still uncertain.",fes:"El resultado de las conversaciones aún es incierto."},
+{id:"milestone",en:"milestone",es:"hito",sense:"logro que marca una etapa",ipa:"/ˈmaɪlstəʊn/",fen:"Passing the SLP will be a milestone in my career.",fes:"Aprobar el SLP será un hito en mi carrera."},
+{id:"insight",en:"insight",es:"comprensión profunda, perspectiva",sense:"visión clara de un asunto",ipa:"/ˈɪnsaɪt/",fen:"The course gave me valuable insight into leadership.",fes:"El curso me dio una valiosa comprensión del liderazgo."},
+{id:"foresee",en:"foresee",es:"prever",sense:"anticipar lo que vendrá",ipa:"/fɔːˈsiː/",fen:"Nobody could foresee the storm.",fes:"Nadie pudo prever el temporal."},
+{id:"log-book",en:"log",es:"cuaderno de bitácora",sense:"registro oficial del buque",ipa:"/lɒɡ/",fen:"Every course change is recorded in the log.",fes:"Cada cambio de rumbo se anota en el cuaderno de bitácora."},
+{id:"log-record",en:"log",es:"registrar, anotar",sense:"dejar constancia escrita",ipa:"/lɒɡ/",fen:"The officer logged the incident at once.",fes:"El oficial registró el incidente de inmediato."},
+{id:"moor",en:"moor",es:"amarrar",sense:"sujetar el buque a puerto",ipa:"/mʊə/",fen:"The frigate moored alongside at noon.",fes:"La fragata amarró al costado a mediodía."},
+{id:"berth",en:"berth",es:"atraque, puesto de atraque",sense:"lugar del buque en puerto",ipa:"/bɜːθ/",fen:"The harbour has no free berths today.",fes:"El puerto no tiene atraques libres hoy.",assoc:{bridge:"Bert (Barrio Sésamo)",scene:"BERT, el de la uniceja, ahora gigantesco, intenta aparcar un transatlántico en un hueco minúsculo entre dos yates. Suda, gira un volante enorme y grita «¡a la izquierda, a la izquierda!» hasta que el barco encaja con un CLONC en su plaza.",funny:"Ernie lo dirige desde el muelle con dos paletas de ping-pong, muerto de risa.",recall:"Bert metiendo el barco en su plaza es berth: el puesto de atraque.",why:"«berth» suena a «Bert»; la maniobra de aparcar el barco fija «atraque»."}},
+{id:"gale",en:"gale",es:"temporal, vendaval",sense:"viento muy fuerte en la mar",ipa:"/ɡeɪl/",fen:"A gale forced us to change course.",fes:"Un temporal nos obligó a cambiar de rumbo.",assoc:{bridge:"Gales",scene:"El país entero de GALES sale volando por los aires arrastrado por un viento monstruoso: ovejas, castillos y jugadores de rugby girando en un tornado gigante sobre el mar.",funny:"Un dragón galés se aferra desesperado a una farola gritando, con la bufanda estirada tres kilómetros por el vendaval.",recall:"El vendaval que se lleva Gales entero es gale: temporal, vendaval.",why:"«gale» suena casi igual que «Gales»; el viento que arrasa el país fija «temporal»."}},
+{id:"treaty",en:"treaty",es:"tratado",sense:"acuerdo entre naciones",ipa:"/ˈtriːti/",fen:"Both nations signed a defence treaty.",fes:"Ambas naciones firmaron un tratado de defensa."},
+{id:"alliance",en:"alliance",es:"alianza",sense:"unión entre países o fuerzas",ipa:"/əˈlaɪəns/",fen:"NATO is the most successful alliance in history.",fes:"La OTAN es la alianza más exitosa de la historia."},
+{id:"warfare",en:"warfare",es:"guerra, arte de la guerra",sense:"forma de combatir",ipa:"/ˈwɔːfeə/",fen:"Cyber warfare is a growing threat.",fes:"La guerra cibernética es una amenaza creciente."},
+{id:"threat",en:"threat",es:"amenaza",sense:"peligro potencial",ipa:"/θret/",fen:"Hybrid threats are difficult to detect.",fes:"Las amenazas híbridas son difíciles de detectar."},
+{id:"ceasefire",en:"ceasefire",es:"alto el fuego",sense:"cese de hostilidades",ipa:"/ˈsiːsfaɪə/",fen:"The ceasefire collapsed after two days.",fes:"El alto el fuego se rompió a los dos días."},
+{id:"casualty",en:"casualty",es:"baja, víctima",sense:"herido o muerto en operación",ipa:"/ˈkæʒuəlti/",fen:"The operation ended without casualties.",fes:"La operación terminó sin bajas."},
+{id:"withdrawal",en:"withdrawal",es:"retirada",sense:"repliegue de fuerzas",ipa:"/wɪðˈdrɔːəl/",fen:"The withdrawal was completed ahead of schedule.",fes:"La retirada se completó antes de lo previsto."},
+{id:"surveillance",en:"surveillance",es:"vigilancia",sense:"observación continua",ipa:"/səˈveɪləns/",fen:"The area is under constant surveillance.",fes:"La zona está bajo vigilancia constante."},
+{id:"intelligence-mil",en:"intelligence",es:"inteligencia, información",sense:"información militar",ipa:"/ɪnˈtelɪdʒəns/",fen:"Intelligence reports confirmed the movement of troops.",fes:"Los informes de inteligencia confirmaron el movimiento de tropas."},
+{id:"deployment",en:"deployment",es:"despliegue",sense:"misión fuera de la base",ipa:"/dɪˈplɔɪmənt/",fen:"This is her third deployment abroad.",fes:"Este es su tercer despliegue en el extranjero."},
+{id:"task-force",en:"task force",es:"fuerza operativa, agrupación",sense:"unidad creada para una misión",ipa:"/ˈtɑːsk fɔːs/",fen:"A naval task force was sent to the area.",fes:"Se envió una agrupación naval a la zona."},
+{id:"headquarters",en:"headquarters",es:"cuartel general",sense:"centro de mando",ipa:"/ˌhedˈkwɔːtəz/",fen:"Orders came directly from headquarters.",fes:"Las órdenes llegaron directamente del cuartel general."},
+{id:"enlist",en:"enlist",es:"alistarse",sense:"ingresar en las fuerzas armadas",ipa:"/ɪnˈlɪst/",fen:"He enlisted in the navy at eighteen.",fes:"Se alistó en la armada a los dieciocho."},
+{id:"escalate",en:"escalate",es:"escalar, intensificarse",sense:"un conflicto que crece",ipa:"/ˈeskəleɪt/",fen:"The conflict could escalate quickly.",fes:"El conflicto podría intensificarse rápidamente."},
+{id:"rely-on",en:"rely on",es:"depender de, confiar en",sense:"necesitar algo o a alguien",ipa:"/rɪˈlaɪ ɒn/",fen:"Modern ships rely on complex software.",fes:"Los buques modernos dependen de programas complejos."},
+{id:"human-rights",en:"human rights",es:"derechos humanos",sense:"tema recurrente del examen",ipa:"/ˌhjuːmən ˈraɪts/",fen:"Human rights must be protected even in wartime.",fes:"Los derechos humanos deben protegerse incluso en tiempo de guerra."},
+{id:"refugee",en:"refugee",es:"refugiado",sense:"quien huye de su país",ipa:"/ˌrefjuˈdʒiː/",fen:"Thousands of refugees crossed the border.",fes:"Miles de refugiados cruzaron la frontera."},
+{id:"asylum",en:"asylum",es:"asilo",sense:"protección en otro país",ipa:"/əˈsaɪləm/",fen:"They applied for asylum in a neighbouring country.",fes:"Solicitaron asilo en un país vecino."},
+{id:"freedom-speech",en:"freedom of speech",es:"libertad de expresión",sense:"derecho fundamental",ipa:"/ˌfriːdəm əv ˈspiːtʃ/",fen:"Freedom of speech is a cornerstone of democracy.",fes:"La libertad de expresión es una piedra angular de la democracia."},
+{id:"rule-of-law",en:"rule of law",es:"estado de derecho",sense:"imperio de la ley",ipa:"/ˌruːl əv ˈlɔː/",fen:"The rule of law guarantees equal treatment.",fes:"El estado de derecho garantiza un trato igualitario."},
+{id:"moreover",en:"moreover",es:"además, es más",sense:"conector formal de adición",ipa:"/mɔːrˈəʊvə/",fen:"Moreover, the evidence supports this view.",fes:"Además, las pruebas respaldan esta opinión."},
+{id:"whereas",en:"whereas",es:"mientras que",sense:"contraste entre dos ideas",ipa:"/weərˈæz/",fen:"Some favour dialogue, whereas others prefer sanctions.",fes:"Unos prefieren el diálogo, mientras que otros prefieren las sanciones."},
+{id:"consequently",en:"consequently",es:"en consecuencia",sense:"conector de resultado",ipa:"/ˈkɒnsɪkwəntli/",fen:"The budget was cut; consequently, the project stopped.",fes:"El presupuesto se recortó; en consecuencia, el proyecto se detuvo."},
+{id:"provided-that",en:"provided that",es:"siempre que, a condición de que",sense:"condición formal",ipa:"/prəˈvaɪdɪd ðət/",fen:"You will pass provided that you practise daily.",fes:"Aprobarás siempre que practiques a diario."},
+{id:"one-hand",en:"on the one hand",es:"por una parte",sense:"abre un contraste; va con on the other hand",ipa:"/ɒn ðə ˈwʌn hænd/",fen:"On the one hand, technology saves time.",fes:"Por una parte, la tecnología ahorra tiempo."},
+{id:"other-hand",en:"on the other hand",es:"por otra parte",sense:"cierra el contraste",ipa:"/ɒn ði ˈʌðə hænd/",fen:"On the other hand, it creates dependence.",fes:"Por otra parte, crea dependencia."},
+{id:"in-terms-of",en:"in terms of",es:"en cuanto a, en términos de",sense:"acotar el aspecto tratado",ipa:"/ɪn ˈtɜːmz əv/",fen:"In terms of cost, the plan is reasonable.",fes:"En cuanto al coste, el plan es razonable."},
+{id:"when-comes-to",en:"when it comes to",es:"en lo que respecta a",sense:"introducir un tema",ipa:"/wen ɪt ˈkʌmz tə/",fen:"When it comes to discipline, the navy sets the standard.",fes:"En lo que respecta a la disciplina, la armada marca la pauta."},
+{id:"take-granted",en:"take for granted",es:"dar por sentado",sense:"no valorar lo que se tiene",ipa:"/ˌteɪk fə ˈɡrɑːntɪd/",fen:"We should not take security for granted.",fes:"No debemos dar por sentada la seguridad."},
+{id:"play-role",en:"play a role",es:"desempeñar un papel",sense:"tener influencia en algo",ipa:"/ˌpleɪ ə ˈrəʊl/",fen:"Sport plays a key role in my routine.",fes:"El deporte desempeña un papel clave en mi rutina."},
+{id:"bridge-gap",en:"bridge the gap",es:"salvar la distancia, reducir la brecha",sense:"unir dos extremos",ipa:"/ˌbrɪdʒ ðə ˈɡæp/",fen:"Training bridges the gap between theory and practice.",fes:"El adiestramiento salva la distancia entre la teoría y la práctica."},
+{id:"double-edged",en:"double-edged sword",es:"arma de doble filo",sense:"ventaja con riesgo",ipa:"/ˌdʌbl edʒd ˈsɔːd/",fen:"Artificial intelligence is a double-edged sword.",fes:"La inteligencia artificial es un arma de doble filo."},
+{id:"in-light-of",en:"in light of",es:"a la luz de, en vista de",sense:"considerando algo reciente",ipa:"/ɪn ˈlaɪt əv/",fen:"In light of recent events, the plan was changed.",fes:"En vista de los últimos acontecimientos, el plan se cambió."},
+{id:"matter-fact",en:"as a matter of fact",es:"de hecho",sense:"reforzar o corregir",ipa:"/əz ə ˌmætər əv ˈfækt/",fen:"As a matter of fact, I have already finished.",fes:"De hecho, ya he terminado."},
+{id:"state-art",en:"state of the art",es:"lo último, puntero",sense:"como adjetivo: state-of-the-art",ipa:"/ˌsteɪt əv ði ˈɑːt/",fen:"The frigate carries state-of-the-art radar.",fes:"La fragata lleva un radar puntero."},
+{id:"breakthrough",en:"breakthrough",es:"avance decisivo",sense:"logro que cambia las cosas",ipa:"/ˈbreɪkθruː/",fen:"The team achieved a breakthrough in machine learning.",fes:"El equipo logró un avance decisivo en aprendizaje automático."},
+{id:"cutting-edge",en:"cutting-edge",es:"puntero, de vanguardia",sense:"tecnología de última generación",ipa:"/ˌkʌtɪŋ ˈedʒ/",fen:"She works with cutting-edge technology.",fes:"Trabaja con tecnología de vanguardia."},
+{id:"reliable",en:"reliable",es:"fiable",sense:"digno de confianza",ipa:"/rɪˈlaɪəbl/",fen:"We need reliable data to decide.",fes:"Necesitamos datos fiables para decidir."},
+{id:"accurate",en:"accurate",es:"preciso, exacto",sense:"sin errores",ipa:"/ˈækjərət/",fen:"The forecast proved remarkably accurate.",fes:"El pronóstico resultó notablemente preciso."},
+{id:"endurance",en:"endurance",es:"resistencia",sense:"capacidad de aguante físico",ipa:"/ɪnˈdjʊərəns/",fen:"Cardio training builds endurance.",fes:"El entrenamiento cardiovascular desarrolla la resistencia."},
+{id:"strength",en:"strength",es:"fuerza",sense:"física; también punto fuerte",ipa:"/streŋθ/",fen:"Strength work twice a week is enough.",fes:"Trabajar la fuerza dos veces por semana es suficiente."},
+{id:"pace",en:"pace",es:"ritmo",sense:"de juego, de trabajo",ipa:"/peɪs/",fen:"Learn to control the pace of the game.",fes:"Aprende a controlar el ritmo del partido."},
+{id:"commitment",en:"commitment",es:"compromiso, dedicación",sense:"entrega constante",ipa:"/kəˈmɪtmənt/",fen:"Success demands daily commitment.",fes:"El éxito exige compromiso diario."},
+{id:"perseverance",en:"perseverance",es:"perseverancia",sense:"constancia ante la dificultad",ipa:"/ˌpɜːsɪˈvɪərəns/",fen:"Perseverance matters more than motivation.",fes:"La perseverancia importa más que la motivación."},
+{id:"setback",en:"setback",es:"revés, contratiempo",sense:"obstáculo temporal",ipa:"/ˈsetbæk/",fen:"Treat every setback as a lesson.",fes:"Trata cada revés como una lección.",assoc:{bridge:"empujón hacia atrás (set back)",scene:"Un tenista sube eufórico al podio, levanta la copa... y una mano gigante que baja del cielo lo EMPUJA HACIA ATRÁS escaleras abajo. Rueda hasta el aparcamiento entre trompetas de victoria que se desinflan.",funny:"La copa rebota detrás de él, escalón a escalón, haciendo «bong, bong, bong».",recall:"Ese empujón que te echa para atrás justo cuando ganabas es un setback: un revés.",why:"«set back» significa literalmente «echar hacia atrás»; el empujón fija «contratiempo»."}},
+{id:"in-charge",en:"in charge of",es:"al mando de, a cargo de",sense:"con responsabilidad sobre algo",ipa:"/ɪn ˈtʃɑːdʒ əv/",fen:"She is in charge of the engineering department.",fes:"Ella está al mando del departamento de máquinas."},
+{id:"charge-money",en:"charge",es:"cobrar",sense:"pedir dinero por algo",ipa:"/tʃɑːdʒ/",fen:"They charged us twice for the same service.",fes:"Nos cobraron dos veces por el mismo servicio."},
+{id:"charge-battery",en:"charge",es:"cargar",sense:"una batería o dispositivo",ipa:"/tʃɑːdʒ/",fen:"Charge the radio before the watch.",fes:"Carga la radio antes de la guardia."}
+];
+
+/* ================= NIVELES ================= */
+/* st: pending → learning → d1 → w1 → w2 → m1 → m2 → done
+   Dirección: la 1ª comprobación de cada nivel es EN→ES; la 2ª, ES→EN */
+const LV = {
+  d1:{label:"1 día",       chev:2, dir:"en", next:"w1",  gap:7,  pts:1,  keep:1},
+  w1:{label:"1 semana · 1ª",chev:3, dir:"en", next:"w2",  gap:7,  pts:0,  keep:7},
+  w2:{label:"1 semana · 2ª",chev:3, dir:"es", next:"m1",  gap:30, pts:3,  keep:7},
+  m1:{label:"1 mes · 1ª",   chev:4, dir:"en", next:"m2",  gap:30, pts:0,  keep:30},
+  m2:{label:"1 mes · 2ª",   chev:4, dir:"es", next:"done",gap:0,  pts:10, keep:30}
+};
+const DEMOTES = {
+  d1:[["learning","Aprendiendo"]],
+  w1:[["d1","1 día"],["learning","Aprendiendo"]],
+  w2:[["d1","1 día"],["learning","Aprendiendo"]],
+  m1:[["w1","1 semana"],["d1","1 día"],["learning","Aprendiendo"]],
+  m2:[["w1","1 semana"],["d1","1 día"],["learning","Aprendiendo"]]
+};
+
+/* ================= ESTADO ================= */
+const KEY="bitacora-slp-v1";
+const VERSION="1.4";
+let S;
+const isExpr=c=>c.en.trim().includes(" ");
+function migrate(){
+  S.cards.forEach(c=>{if(c.seen==null)c.seen=0;});
+  SEED.forEach(s=>{
+    if(s.assoc){const c=S.cards.find(x=>x.id===s.id);if(c&&!c.assoc)c.assoc=s.assoc;}
+  });
+}
+function logDay(p,d){
+  if(!S.hist)S.hist={};
+  const t=today();
+  const h=S.hist[t]||(S.hist[t]={p:0,d:0});
+  h.p+=p;h.d+=d;
+}
+function syncSeed(){
+  let added=0;
+  SEED.forEach(c=>{
+    if(!S.cards.find(x=>x.id===c.id)){S.cards.push({...c,st:"pending",due:null,seen:0});added++;}
+  });
+  if(!S.hist)S.hist={};
+  migrate();
+  save();
+  return added;
+}
+function load(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(raw){S=JSON.parse(raw);syncSeed();return;}
+  }catch(e){}
+  S={cards:SEED.map(c=>({...c,st:"pending",due:null,seen:0})),pts:0,streak:0,last:null,hist:{}};
+  save();
+}
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(S));}
+  catch(e){toast("No se pudo guardar (¿modo privado?)");}
+}
+function today(){
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function addDays(n){
+  const d=new Date();d.setDate(d.getDate()+n);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function touchStreak(){
+  const t=today();
+  if(S.last===t)return;
+  const y=new Date();y.setDate(y.getDate()-1);
+  const yd=y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0");
+  S.streak=(S.last===yd)?S.streak+1:1;
+  S.last=t;
+}
+const dueCards=()=>S.cards.filter(c=>LV[c.st]&&c.due&&c.due<=today());
+const byId=id=>S.cards.find(c=>c.id===id);
+
+/* ================= AUDIO ================= */
+let VOICE=null;
+function pickVoice(){
+  const vs=speechSynthesis.getVoices();
+  VOICE=vs.find(v=>v.lang==="en-GB")||vs.find(v=>v.lang.startsWith("en-"))||vs.find(v=>v.lang.startsWith("en"))||null;
+}
+if("speechSynthesis" in window){
+  pickVoice();
+  speechSynthesis.onvoiceschanged=pickVoice;
+}
+function speak(txt){
+  if(!("speechSynthesis" in window)){toast("Audio no disponible");return;}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(txt);
+  u.lang=VOICE?VOICE.lang:"en-GB";
+  if(VOICE)u.voice=VOICE;
+  u.rate=0.92;
+  speechSynthesis.speak(u);
+}
+
+/* ================= UI ================= */
+const app=document.getElementById("app");
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+const XB='<span class="sense" style="color:var(--brass);border-color:var(--brass);margin-left:4px">expresión ×2</span>';
+function assocBlock(c){
+  if(!c.assoc)return "";
+  const a=c.assoc;
+  let inner="";
+  if(a.bridge)inner+='<p class="amn"><span>🎭 Palabra puente</span>'+esc(a.bridge)+'</p>';
+  if(a.scene)inner+='<p class="amn"><span>🎬 La escena</span>'+esc(a.scene)+'</p>';
+  if(a.funny)inner+='<p class="amn"><span>😂 El toque absurdo</span>'+esc(a.funny)+'</p>';
+  if(a.recall)inner+='<p class="amn"><span>🧠 Qué recordar</span>'+esc(a.recall)+'</p>';
+  if(a.why)inner+='<p class="amn"><span>💡 Por qué funciona</span>'+esc(a.why)+'</p>';
+  const id="as-"+c.id;
+  return '<button class="assocbtn" onclick="toggleAssoc(\''+id+'\',this)">🧠 Asociación</button>'+
+         '<div id="'+id+'" class="assoc hidden">'+inner+'</div>';
+}
+function toggleAssoc(id,btn){
+  const e=document.getElementById(id);
+  e.classList.toggle("hidden");
+  btn.textContent=e.classList.contains("hidden")?"🧠 Asociación":"🧠 Ocultar asociación";
+}
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),1700);
+}
+function chevrons(n,star){
+  let h='<div class="chev">';
+  for(let i=1;i<=4;i++)h+='<i class="'+(i<=n?"on":"")+'"></i>';
+  h+='<i class="star '+(star?"on":"")+'"></i></div>';
+  return h;
+}
+function levelRow(c,pill){
+  const st=c.st;
+  let n=0,star=false,txt="";
+  if(st==="learning"){n=1;txt="Aprendiendo";}
+  else if(LV[st]){n=LV[st].chev;txt=LV[st].label;}
+  else if(st==="done"){n=4;star=true;txt="Dominada";}
+  const p=pill?'<span class="dirpill">'+pill+'</span>':'';
+  return '<div class="levelrow">'+chevrons(n,star)+'<span class="lvltxt">'+txt+'</span>'+p+'</div>';
+}
+
+/* ---------- HOME ---------- */
+function home(){
+  if(window.speechSynthesis)speechSynthesis.cancel();
+  const due=dueCards().length;
+  const learning=S.cards.filter(c=>c.st==="learning").length;
+  const pending=S.cards.filter(c=>c.st==="pending").length;
+  const done=S.cards.filter(c=>c.st==="done").length;
+  app.innerHTML=`
+  <div class="gauge"><div class="dial" onclick="progressView('d')" style="cursor:pointer">
+    <svg viewBox="0 0 190 190">
+      <circle cx="95" cy="95" r="88" fill="none" stroke="#24405A" stroke-width="1.5"/>
+      <circle cx="95" cy="95" r="80" fill="none" stroke="#C9A063" stroke-width="2"
+        stroke-dasharray="2 11.09" stroke-linecap="round" opacity="0.9"/>
+      <circle cx="95" cy="95" r="70" fill="none" stroke="#24405A" stroke-width="1" stroke-dasharray="1 21"/>
+    </svg>
+    <div class="num"><b>${S.pts}</b><span>puntos</span></div>
+  </div></div>
+  <div class="stats">
+    <div class="stat"><b style="color:var(--brass)">${done}</b><span>Dominadas</span></div>
+    <div class="stat"><b>${S.streak}</b><span>Racha días</span></div>
+    <div class="stat"><b>${due}</b><span>Para hoy</span></div>
+  </div>
+  <div class="menu">
+    <button class="big" onclick="review()"><span>Repasar hoy</span><span class="n">${due}</span></button>
+    <button class="big" onclick="learningList()"><span>Cuaderno · Aprendiendo</span><span class="n">${learning}</span></button>
+    <button class="big" onclick="newCards()"><span>Añadir palabras nuevas</span><span class="n">${pending}</span></button>
+    <button class="big" onclick="progressView('d')"><span>Progreso</span><span class="n">▤</span></button>
+    <button class="big" onclick="dataView()"><span>Datos y copia de seguridad</span><span class="n">›</span></button>
+  </div>`;
+}
+
+/* ---------- REPASO ---------- */
+let queue=[],qTotal=0,sesOk=0,sesKo=0;
+function review(){
+  const due=dueCards();
+  for(let i=due.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[due[i],due[j]]=[due[j],due[i]];}
+  queue=due.map(c=>c.id);
+  qTotal=queue.length;sesOk=0;sesKo=0;
+  if(!qTotal){
+    app.innerHTML='<div class="empty">Sin repasos pendientes.<br>El cuaderno está al día: vuelve mañana.</div>'+backBtn();
+    return;
+  }
+  question();
+}
+function question(){
+  if(!queue.length){
+    app.innerHTML='<div class="empty">Repaso de hoy completado.<br>'+sesOk+' aciertos · '+sesKo+' fallos.<br>Buen rumbo.</div>'+backBtn();
+    return;
+  }
+  const c=byId(queue[0]);
+  const dir=LV[c.st].dir;
+  const pill=dir==="en"?"EN → ES":"ES → EN";
+  let front;
+  if(dir==="en"){
+    front=`<div class="word">${esc(c.en)}</div><div class="ipa">${esc(c.ipa)}</div>
+      <div class="phrase">${esc(c.fen)}</div>
+      <button class="speak" onclick="speak('${esc(c.en).replace(/'/g,"\\'")}. ${esc(c.fen).replace(/'/g,"\\'")}')">▶ Escuchar</button>`;
+  }else{
+    front=`<div class="word">${esc(c.es)}</div><div><span class="sense">${esc(c.sense)}</span>${isExpr(c)?XB:""}</div>
+      <div class="phrase es">${esc(c.fes)}</div>`;
+  }
+  app.innerHTML=`
+  <div class="progress">${qTotal-queue.length+1} de ${qTotal}</div>
+  <div class="card">
+    ${levelRow(c,pill)}
+    ${front}
+    <div id="answer" class="hidden"></div>
+  </div>
+  <div id="controls">
+    <button class="primary" onclick="reveal()">Mostrar respuesta</button>
+  </div>`;
+}
+function reveal(){
+  const c=byId(queue[0]);
+  const dir=LV[c.st].dir;
+  const ans=document.getElementById("answer");
+  if(dir==="en"){
+    ans.innerHTML=`<div class="divider"></div>
+      <div class="word">${esc(c.es)}</div><div><span class="sense">${esc(c.sense)}</span>${isExpr(c)?XB:""}</div>
+      <div class="phrase es">${esc(c.fes)}</div>${assocBlock(c)}`;
+  }else{
+    ans.innerHTML=`<div class="divider"></div>
+      <div class="word">${esc(c.en)}</div><div class="ipa">${esc(c.ipa)}</div>
+      <div class="phrase">${esc(c.fen)}</div>
+      <button class="speak" onclick="speak('${esc(c.en).replace(/'/g,"\\'")}. ${esc(c.fen).replace(/'/g,"\\'")}')">▶ Escuchar</button>${assocBlock(c)}`;
+  }
+  ans.classList.remove("hidden");
+  document.getElementById("controls").innerHTML=`
+    <div class="row">
+      <button class="badbtn" onclick="fail()">✗ No la sabía</button>
+      <button class="okbtn" onclick="pass()">✓ La sabía</button>
+    </div>`;
+}
+function pass(){
+  const c=byId(queue.shift());
+  const lv=LV[c.st];
+  const gained=lv.pts*(isExpr(c)?2:1);
+  touchStreak();sesOk++;
+  if(lv.next==="done"){
+    c.st="done";c.due=null;
+  }else{
+    c.st=lv.next;c.due=addDays(lv.gap);
+  }
+  if(gained>0)S.pts+=gained;
+  logDay(gained,c.st==="done"?1:0);
+  save();
+  if(c.st==="done")toast("★ Dominada · +"+gained+" puntos");
+  else if(gained>0)toast("+"+gained+(gained===1?" punto":" puntos")+" · siguiente en "+lv.gap+" días");
+  else toast("✓ Siguiente comprobación en "+lv.gap+" días");
+  question();
+}
+function fail(){
+  const c=byId(queue[0]);
+  const lv=LV[c.st];
+  let opts=`<button class="ghost" onclick="keepLevel()">Mantener en ${lv.label.split(" ·")[0]} · repito en ${lv.keep===1?"1 día":lv.keep+" días"}</button>`;
+  DEMOTES[c.st].forEach(([st,name])=>{
+    opts+=`<button class="ghost" onclick="demote('${st}')">Bajar a ${name}</button>`;
+  });
+  document.getElementById("controls").innerHTML=
+    '<p class="hint" style="text-align:center;margin-bottom:10px">Sin puntos. ¿Qué hacemos con ella?</p>'+
+    '<div class="menu">'+opts+'</div>';
+}
+function keepLevel(){
+  const c=byId(queue.shift());
+  c.due=addDays(LV[c.st].keep);
+  touchStreak();sesKo++;save();question();
+}
+function demote(st){
+  const c=byId(queue.shift());
+  c.st=st;
+  c.due=st==="learning"?null:addDays(st==="d1"?1:7);
+  touchStreak();sesKo++;save();question();
+}
+
+/* ---------- PROGRESO ---------- */
+const MESES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+function bars(data,labels,stars){
+  const W=480,H=140;
+  const max=Math.max(1,...data);
+  const bw=W/data.length;
+  const w=Math.min(bw-6,40);
+  let s='<svg viewBox="0 0 '+W+' '+(H+26)+'" style="width:100%;display:block">';
+  data.forEach((v,i)=>{
+    const h=v?Math.max(3,Math.round(v/max*(H-34))):3;
+    const x=i*bw+(bw-w)/2, y=H-h;
+    s+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="#C9A063" opacity="'+(v?0.95:0.15)+'"/>';
+    if(v)s+='<text x="'+(i*bw+bw/2)+'" y="'+(y-5)+'" text-anchor="middle" font-size="11" fill="#EFE7D6">'+v+'</text>';
+    if(stars[i])s+='<text x="'+(i*bw+bw/2)+'" y="'+(y-19)+'" text-anchor="middle" font-size="10" fill="#C9A063">'+"★".repeat(Math.min(stars[i],3))+(stars[i]>3?"+":"")+'</text>';
+    s+='<text x="'+(i*bw+bw/2)+'" y="'+(H+18)+'" text-anchor="middle" font-size="10" fill="#7FA3C0">'+labels[i]+'</text>';
+  });
+  return s+'</svg>';
+}
+function progressView(tab){
+  if(!S.hist)S.hist={};
+  const done=S.cards.filter(c=>c.st==="done").length;
+  const th=S.hist[today()]||{p:0,d:0};
+  let chart,caption;
+  if(tab==="d"){
+    const data=[],labels=[],stars=[];
+    for(let i=13;i>=0;i--){
+      const k=addDays(-i);
+      const h=S.hist[k]||{p:0,d:0};
+      data.push(h.p);stars.push(h.d);
+      labels.push(parseInt(k.slice(8),10));
+    }
+    chart=bars(data,labels,stars);
+    caption="Puntos por día · últimos 14 días";
+  }else if(tab==="w"){
+    const data=[],labels=[],stars=[];
+    const base=new Date();
+    base.setDate(base.getDate()-((base.getDay()+6)%7)); // lunes de esta semana
+    for(let j=7;j>=0;j--){
+      const start=new Date(base);start.setDate(base.getDate()-j*7);
+      let p=0,dn=0;
+      for(let d=0;d<7;d++){
+        const dd=new Date(start);dd.setDate(start.getDate()+d);
+        const key=dd.getFullYear()+"-"+String(dd.getMonth()+1).padStart(2,"0")+"-"+String(dd.getDate()).padStart(2,"0");
+        const h=S.hist[key];if(h){p+=h.p;dn+=h.d;}
+      }
+      data.push(p);stars.push(dn);
+      labels.push(start.getDate()+"/"+(start.getMonth()+1));
+    }
+    chart=bars(data,labels,stars);
+    caption="Puntos por semana · últimas 8 semanas (lun–dom)";
+  }else{
+    const data=[],labels=[],stars=[];
+    for(let j=5;j>=0;j--){
+      const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-j);
+      const key=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+      let p=0,dn=0;
+      Object.keys(S.hist).forEach(k=>{if(k.slice(0,7)===key){p+=S.hist[k].p;dn+=S.hist[k].d;}});
+      data.push(p);stars.push(dn);
+      labels.push(MESES[d.getMonth()]);
+    }
+    chart=bars(data,labels,stars);
+    caption="Puntos por mes · últimos 6 meses";
+  }
+  const per=tab==="d"?"día":tab==="w"?"semana":"mes";
+  app.innerHTML=`
+  <h2>Progreso</h2>
+  <div class="stats">
+    <div class="stat"><b style="color:var(--brass)">${th.p}</b><span>Puntos hoy</span></div>
+    <div class="stat"><b style="color:var(--brass)">${done}</b><span>Dominadas</span></div>
+    <div class="stat"><b>${S.streak}</b><span>Racha días</span></div>
+  </div>
+  <div class="row" style="margin-bottom:12px">
+    <button class="${tab==="d"?"primary":"ghost"}" style="flex:1" onclick="progressView('d')">Diario</button>
+    <button class="${tab==="w"?"primary":"ghost"}" style="flex:1" onclick="progressView('w')">Semanal</button>
+    <button class="${tab==="m"?"primary":"ghost"}" style="flex:1" onclick="progressView('m')">Mensual</button>
+  </div>
+  <div class="card">
+    <p class="lvltxt" style="margin-bottom:12px">${caption}</p>
+    ${chart}
+    <p class="hint">★ = dominadas ese ${per} · Puntos: palabra 1 / 3 / 10 · expresión 2 / 6 / 20</p>
+  </div>`+backBtn();
+}
+
+/* ---------- APRENDIENDO ---------- */
+function learningList(){
+  const list=S.cards.filter(c=>c.st==="learning");
+  let h='<h2>Aprendiendo</h2><p class="sub">Estudia estas fichas. Cuando tengas una memorizada, márcala y mañana te la preguntaré de inglés a español.</p>';
+  if(list.length>1)h+='<div class="menu" style="margin-top:14px"><button class="primary" onclick="trainStart()">🎯 Entrenar estas '+list.length+' fichas</button></div>';
+  else h+='<br>';
+  if(!list.length)h+='<div class="empty">No hay fichas en estudio.<br>Añade palabras nuevas al cuaderno.</div>';
+  list.forEach(c=>{
+    const seen=c.seen?'<span class="seen">'+c.seen+'× cuesta</span>':'';
+    h+=`<div class="card">${levelRow(c).replace('</div>',seen+'</div>')}
+      <div class="word">${esc(c.en)}</div><div class="ipa">${esc(c.ipa)}</div>
+      <div><span class="sense">${esc(c.sense)}</span>${isExpr(c)?XB:""}</div>
+      <div class="phrase">${esc(c.fen)}</div>
+      <div class="divider"></div>
+      <div class="word" style="font-size:20px">${esc(c.es)}</div>
+      <div class="phrase es">${esc(c.fes)}</div>
+      ${assocBlock(c)}
+      <div class="row" style="margin-top:14px">
+        <button class="speak" onclick="speak('${esc(c.en).replace(/'/g,"\\'")}. ${esc(c.fen).replace(/'/g,"\\'")}')">▶ Escuchar</button>
+        <button class="ghost" style="flex:1" id="k-${c.id}" onclick="known('${c.id}')">Ya me la sé</button>
+      </div>
+    </div>`;
+  });
+  app.innerHTML=h+backBtn();
+}
+function known(id){
+  const b=document.getElementById("k-"+id);
+  if(b.dataset.c){
+    const c=byId(id);
+    c.st="d1";c.due=addDays(1);
+    touchStreak();save();
+    toast("Te la pregunto mañana");
+    learningList();
+  }else{
+    b.dataset.c="1";b.textContent="¿Seguro? Te la pregunto mañana";
+    b.style.borderColor="var(--brass)";b.style.color="var(--brass)";
+  }
+}
+
+/* ---------- ENTRENAMIENTO (práctica libre, sin puntos) ---------- */
+let tPool=[],tDir="en";
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function trainStart(){
+  tPool=shuffle(S.cards.filter(c=>c.st==="learning").map(c=>c.id));
+  if(!tPool.length){app.innerHTML='<div class="empty">No hay fichas en estudio.</div>'+backBtn();return;}
+  trainCard();
+}
+function trainCard(){
+  if(!tPool.length){
+    app.innerHTML='<div class="empty">Vuelta completada.<br>Sigue con las que aún se resisten o vuelve al cuaderno.</div>'+
+      '<div class="menu"><button class="primary" onclick="trainStart()">Otra vuelta</button></div>'+
+      '<button class="back" onclick="learningList()">‹ Volver a Aprendiendo</button>';
+    return;
+  }
+  const c=byId(tPool[0]);
+  tDir=Math.random()<0.5?"en":"es";
+  const front=tDir==="en"
+    ?`<div class="word">${esc(c.en)}</div><div class="ipa">${esc(c.ipa)}</div><div class="phrase">${esc(c.fen)}</div>`
+    :`<div class="word">${esc(c.es)}</div><div><span class="sense">${esc(c.sense)}</span>${isExpr(c)?XB:""}</div><div class="phrase es">${esc(c.fes)}</div>`;
+  app.innerHTML=`
+  <div class="progress">Entrenamiento · ${tPool.length} en cola</div>
+  <div class="card">
+    <div class="levelrow"><span class="lvltxt">${tDir==="en"?"EN → ES":"ES → EN"}</span>${c.seen?'<span class="seen">'+c.seen+'× cuesta</span>':''}</div>
+    ${front}
+    <div id="tans" class="hidden"></div>
+  </div>
+  <div id="tctrl"><button class="primary" onclick="trainReveal()">Mostrar traducción</button></div>`;
+}
+function trainReveal(){
+  const c=byId(tPool[0]);
+  const back=tDir==="en"
+    ?`<div class="divider"></div><div class="word">${esc(c.es)}</div><div><span class="sense">${esc(c.sense)}</span>${isExpr(c)?XB:""}</div><div class="phrase es">${esc(c.fes)}</div>${assocBlock(c)}`
+    :`<div class="divider"></div><div class="word">${esc(c.en)}</div><div class="ipa">${esc(c.ipa)}</div><div class="phrase">${esc(c.fen)}</div><button class="speak" onclick="speak('${esc(c.en).replace(/'/g,"\\'")}. ${esc(c.fen).replace(/'/g,"\\'")}')">▶ Escuchar</button>${assocBlock(c)}`;
+  const t=document.getElementById("tans");t.innerHTML=back;t.classList.remove("hidden");
+  document.getElementById("tctrl").innerHTML=`
+    <div class="row">
+      <button class="ghost" style="flex:1" onclick="trainNext()">↻ Repasar más</button>
+      <button class="okbtn" onclick="trainGot()">✓ Aprendida</button>
+    </div>
+    <p class="tcount">«Repasar más» suma al contador de dificultad</p>`;
+}
+function trainNext(){
+  const c=byId(tPool.shift());
+  c.seen=(c.seen||0)+1;save();
+  tPool.push(c.id); // vuelve al final de la cola
+  trainCard();
+}
+function trainGot(){
+  const c=byId(tPool.shift());
+  c.st="d1";c.due=addDays(1);
+  touchStreak();save();
+  toast("Aprendida · te la pregunto mañana");
+  trainCard();
+}
+
+/* ---------- NUEVAS ---------- */
+function newCards(){
+  const p=S.cards.filter(c=>c.st==="pending");
+  if(!p.length){
+    app.innerHTML='<div class="empty">No quedan palabras pendientes.<br>Pídeme una tanda nueva y la importas en Datos.</div>'+backBtn();
+    return;
+  }
+  const c=p[0];
+  app.innerHTML=`
+  <h2>Palabra nueva</h2><p class="sub">${p.length} pendientes en la base</p><br>
+  <div class="card">
+    <div class="word">${esc(c.en)}</div><div class="ipa">${esc(c.ipa)}</div>
+    <div><span class="sense">${esc(c.sense)}</span>${isExpr(c)?XB:""}</div>
+    <div class="phrase">${esc(c.fen)}</div>
+    <div class="divider"></div>
+    <div class="word" style="font-size:20px">${esc(c.es)}</div>
+    <div class="phrase es">${esc(c.fes)}</div>
+    <button class="speak" onclick="speak('${esc(c.en).replace(/'/g,"\\'")}. ${esc(c.fen).replace(/'/g,"\\'")}')">▶ Escuchar</button>${assocBlock(c)}
+  </div>
+  <div class="menu">
+    <button class="primary" onclick="startLearn('${c.id}')">Empezar a estudiarla</button>
+    <button class="ghost" onclick="skipCard('${c.id}')">Más tarde</button>
+  </div>`+backBtn();
+}
+function startLearn(id){
+  const c=byId(id);c.st="learning";
+  touchStreak();save();toast("Al cuaderno de Aprendiendo");newCards();
+}
+function skipCard(id){
+  const i=S.cards.findIndex(c=>c.id===id);
+  const [c]=S.cards.splice(i,1);S.cards.push(c);
+  save();newCards();
+}
+
+/* ---------- DATOS ---------- */
+function dataView(){
+  const done=S.cards.filter(c=>c.st==="done").length;
+  const inplay=S.cards.filter(c=>["learning","d1","w1","w2","m1","m2"].includes(c.st)).length;
+  const nexpr=S.cards.filter(isExpr).length;
+  app.innerHTML=`
+  <h2>Datos</h2>
+  <div class="card">
+    <p class="sub">Fichas totales: <b style="color:var(--ivory)">${S.cards.length}</b> · En juego: <b style="color:var(--ivory)">${inplay}</b> · Dominadas: <b style="color:var(--brass)">${done}</b> · Puntos: <b style="color:var(--brass)">${S.pts}</b></p>
+    <p class="sub" style="margin-top:6px">Palabras: <b style="color:var(--ivory)">${S.cards.length-nexpr}</b> · Expresiones: <b style="color:var(--ivory)">${nexpr}</b> (puntúan el doble)</p>
+  </div>
+  <div class="menu"><button class="big" onclick="masteredList()"><span>Ver dominadas</span><span class="n">${done}</span></button></div>
+  <h2>Copia de seguridad</h2>
+  <p class="sub">Descarga o copia el archivo completo (fichas + progreso). Guárdalo y compártemelo en el chat para seguimiento.</p>
+  <div class="menu" style="margin-top:10px">
+    <button class="primary" onclick="exportData()">Descargar copia</button>
+    <button class="ghost" onclick="copyData()">Copiar al portapapeles</button>
+  </div>
+  <h2>Importar</h2>
+  <p class="sub">Pega aquí una tanda nueva de fichas (te las genero yo) o una copia de seguridad completa.</p>
+  <textarea id="imp" placeholder='[{"id":"...","en":"...","es":"...","sense":"...","ipa":"...","fen":"...","fes":"..."}]'></textarea>
+  <div class="menu">
+    <button class="primary" onclick="importBatch()">Añadir tanda nueva</button>
+    <button class="ghost" onclick="restoreBackup()">Restaurar copia completa</button>
+  </div>
+  <p class="sub" style="text-align:center;margin-top:6px">Bitácora SLP · v${VERSION}</p>`+backBtn();
+}
+function masteredList(){
+  const list=S.cards.filter(c=>c.st==="done");
+  let h='<h2>Dominadas</h2><p class="sub">Tu botín. Estas ya son tuyas.</p><br>';
+  if(!list.length)h+='<div class="empty">Aún ninguna.<br>La primera cae en unos 75 días de trabajo constante.</div>';
+  list.forEach(c=>{
+    h+=`<div class="card">${levelRow(c)}
+      <div class="word">${esc(c.en)}</div><div class="ipa">${esc(c.ipa)}</div>
+      <div><span class="sense">${esc(c.sense)}</span>${isExpr(c)?XB:""}</div>
+      <div class="phrase">${esc(c.fen)}</div>
+      <div class="divider"></div>
+      <div class="word" style="font-size:20px">${esc(c.es)}</div>
+      <div class="phrase es">${esc(c.fes)}</div>
+      <button class="speak" onclick="speak('${esc(c.en).replace(/'/g,"\\'")}. ${esc(c.fen).replace(/'/g,"\\'")}')">▶ Escuchar</button>${assocBlock(c)}
+    </div>`;
+  });
+  app.innerHTML=h+backBtn();
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="bitacora-slp-"+today()+".json";
+  a.click();
+}
+function copyData(){
+  navigator.clipboard.writeText(JSON.stringify(S)).then(()=>toast("Copiado")).catch(()=>toast("No se pudo copiar"));
+}
+function importBatch(){
+  try{
+    let data=JSON.parse(document.getElementById("imp").value.trim());
+    if(!Array.isArray(data))data=data.cards;
+    if(!Array.isArray(data))throw 0;
+    let added=0,upd=0;
+    data.forEach(c=>{
+      if(!c.id)return;
+      const ex=byId(c.id);
+      if(!ex&&c.en&&c.es){
+        S.cards.push({id:c.id,en:c.en,es:c.es,sense:c.sense||"",ipa:c.ipa||"",fen:c.fen||"",fes:c.fes||"",assoc:c.assoc||null,st:"pending",due:null,seen:0});
+        added++;
+      }else if(ex&&c.assoc){
+        ex.assoc=c.assoc;upd++;
+      }
+    });
+    save();
+    toast(added+" añadidas · "+upd+" asociaciones");dataView();
+  }catch(e){toast("Formato no válido");}
+}
+function restoreBackup(){
+  try{
+    const data=JSON.parse(document.getElementById("imp").value.trim());
+    if(!data.cards||!Array.isArray(data.cards))throw 0;
+    if(!confirm("Esto sustituye TODO el progreso actual por el de la copia. ¿Continuar?"))return;
+    S=data;save();syncSeed();toast("Copia restaurada");home();
+  }catch(e){toast("Formato no válido");}
+}
+
+const backBtn=()=>'<button class="back" onclick="home()">‹ Volver al panel</button>';
+
+/* ================= ARRANQUE ================= */
+load();
+home();
+
+/* Service worker: guarda la app en el móvil para uso sin conexión.
+   Si se abre el archivo suelto (sin servidor) falla en silencio y no pasa nada. */
+if("serviceWorker" in navigator){
+  window.addEventListener("load",function(){
+    navigator.serviceWorker.register("sw.js").catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
