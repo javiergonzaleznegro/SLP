@@ -2,7 +2,7 @@
    Guarda la app en el dispositivo para que funcione sin conexión.
    Al publicar una versión nueva, sube el CACHE (v14 -> v15...) y se
    actualizará sola la próxima vez que haya conexión. */
-const CACHE = "bitacora-slp-v15";
+const CACHE = "bitacora-slp-v18";
 
 /* Solo se precargan recursos garantizados; los iconos se cachean al vuelo. */
 const SHELL = ["./", "./index.html", "./manifest.json"];

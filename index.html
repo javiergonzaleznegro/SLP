@@ -48,6 +48,9 @@ h2{font-family:var(--disp);font-weight:500;letter-spacing:.14em;text-transform:u
 .stat{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center}
 .stat b{display:block;font-family:var(--disp);font-size:22px;font-weight:600}
 .stat span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faded)}
+.pipeline{display:flex;align-items:center;justify-content:space-between;gap:6px;border:1px dashed var(--line);border-radius:12px;padding:10px 14px;margin:-6px 0 16px;font-size:13px;color:var(--faded);flex-wrap:wrap}
+.pipeline b{color:var(--ivory);font-family:var(--disp);font-size:16px;margin-left:3px}
+.version{text-align:center;font-family:var(--disp);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--line);margin-top:22px}
 
 /* ---------- botones ---------- */
 .menu{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
@@ -123,18 +126,18 @@ const SEED = [
 {id:"vessel",en:"vessel",es:"buque, embarcación",sense:"término formal",ipa:"/ˈvesl/",fen:"All vessels must report their position.",fes:"Todos los buques deben comunicar su posición."},
 {id:"readiness",en:"readiness",es:"alistamiento, disponibilidad",sense:"estado de preparación",ipa:"/ˈredinəs/",fen:"The crew maintained a high state of readiness.",fes:"La dotación mantuvo un alto grado de alistamiento."},
 {id:"deploy",en:"deploy",es:"desplegar",sense:"enviar fuerzas o medios",ipa:"/dɪˈplɔɪ/",fen:"The unit was deployed overseas for six months.",fes:"La unidad fue desplegada en el extranjero seis meses."},
-{id:"deterrence",en:"deterrence",es:"disuasión",sense:"estrategia de defensa",ipa:"/dɪˈterəns/",fen:"Nuclear deterrence remains a pillar of NATO strategy.",fes:"La disuasión nuclear sigue siendo un pilar de la estrategia de la OTAN."},
+{id:"deterrence",en:"deterrence",es:"disuasión",sense:"estrategia de defensa",ipa:"/dɪˈterəns/",fen:"Nuclear deterrence remains a pillar of NATO strategy.",fes:"La disuasión nuclear sigue siendo un pilar de la estrategia de la OTAN.",assoc:{bridge:"de terror",scene:"Ante la puerta del castillo, un dragón colosal escupe fuego solo para enseñar lo que puede hacer. Los ejércitos enemigos, muertos DE TERROR, dan media vuelta sin llegar a atacar: nadie se atreve.",funny:"El dragón ni pelea; basta con que bostece llamas y una tostada gigante cae del cielo para que huyan todos.",recall:"Meter tanto miedo que el enemigo no se atreva a atacar es deterrence: disuasión.",why:"«deter» suena a «de terror»; el enemigo que se retira aterrado sin combatir fija «disuadir»."}},
 {id:"chain-command",en:"chain of command",es:"cadena de mando",sense:"jerarquía militar",ipa:"/tʃeɪn əv kəˈmɑːnd/",fen:"Report the issue through the chain of command.",fes:"Comunica el problema por la cadena de mando."},
 {id:"roe",en:"rules of engagement",es:"reglas de enfrentamiento",sense:"normas de uso de la fuerza",ipa:"/ruːlz əv ɪnˈɡeɪdʒmənt/",fen:"The rules of engagement were briefed before the mission.",fes:"Las reglas de enfrentamiento se expusieron antes de la misión."},
 {id:"briefing",en:"briefing",es:"reunión informativa, exposición",sense:"antes de una actividad",ipa:"/ˈbriːfɪŋ/",fen:"Attendance at the morning briefing is mandatory.",fes:"La asistencia a la reunión informativa matinal es obligatoria."},
-{id:"liaison",en:"liaison",es:"enlace",sense:"persona o función de coordinación",ipa:"/liˈeɪzɒn/",fen:"She acts as liaison between both navies.",fes:"Ella actúa de enlace entre ambas armadas."},
-{id:"overhaul",en:"overhaul",es:"revisión general, puesta a punto",sense:"mantenimiento a fondo",ipa:"/ˈəʊvəhɔːl/",fen:"The engine needs a complete overhaul.",fes:"El motor necesita una revisión general completa."},
+{id:"liaison",en:"liaison",es:"enlace",sense:"persona o función de coordinación",ipa:"/liˈeɪzɒn/",fen:"She acts as liaison between both navies.",fes:"Ella actúa de enlace entre ambas armadas.",assoc:{bridge:"Leia (Star Wars)",scene:"La princesa LEIA corre de una base rebelde a otra sin descanso, llevando mensajes secretos en un holograma («ayúdame, Obi-Wan»). Es la que conecta y coordina a los dos bandos para que se entiendan.",funny:"Lleva tantos mensajes a la vez que los moños se le llenan de notas adhesivas y parece un tablón de anuncios andante.",recall:"La persona que enlaza y coordina a dos partes es liaison: enlace.",why:"«liaison» empieza sonando como «Lei-a»; Leia haciendo de puente entre bandos fija «enlace»."}},
+{id:"overhaul",en:"overhaul",es:"revisión general, puesta a punto",sense:"mantenimiento a fondo",ipa:"/ˈəʊvəhɔːl/",fen:"The engine needs a complete overhaul.",fes:"El motor necesita una revisión general completa.",assoc:{bridge:"overol (mono de mecánico)",scene:"Un mecánico con su OVEROL azul desmonta el motor entero, pieza a pieza, lo limpia, cambia lo gastado y lo vuelve a montar como nuevo. No es un arreglo rápido: lo revisa TODO de arriba abajo.",funny:"Saca tantas piezas que el suelo del taller parece un puzle de mil piezas, y al final le sobra un tornillo que nadie sabe de dónde salió.",recall:"Desmontar y poner algo a punto por completo es overhaul: revisión general.",why:"overhaul suena a «overol», el mono del mecánico; y un mecánico en overol es justo quien hace una revisión a fondo."}},
 {id:"seamanship",en:"seamanship",es:"marinería, arte de navegar",sense:"destreza del marino",ipa:"/ˈsiːmənʃɪp/",fen:"Good seamanship prevented a collision.",fes:"La buena marinería evitó un abordaje."},
-{id:"convey",en:"convey",es:"transmitir",sense:"una idea o sensación",ipa:"/kənˈveɪ/",fen:"It is hard to convey how demanding sea duty is.",fes:"Es difícil transmitir lo exigente que es el servicio en la mar."},
+{id:"convey",en:"convey",es:"transmitir",sense:"una idea o sensación",ipa:"/kənˈveɪ/",fen:"It is hard to convey how demanding sea duty is.",fes:"Es difícil transmitir lo exigente que es el servicio en la mar.",assoc:{bridge:"conveyor belt (cinta transportadora)",scene:"Una CINTA TRANSPORTADORA gigante sale de la cabeza de una persona y lleva sus ideas, envueltas como paquetes, directas a la cabeza de otra. Cada idea viaja por la cinta y se entrega intacta al otro lado.",funny:"Una idea demasiado grande atasca la cinta y hay que empujarla con una carretilla entre tres operarios.",recall:"Llevar una idea de una mente a otra y entregarla es convey: transmitir.",why:"convey está dentro de «conveyor belt», la cinta que transporta; y es justo lo que hace Leia (liaison), que convey sus mensajes de un bando a otro."}},
 {id:"grasp-und",en:"grasp",es:"comprender, captar",sense:"entender una idea",ipa:"/ɡrɑːsp/",fen:"It took me a while to grasp the concept.",fes:"Tardé un poco en captar el concepto."},
 {id:"grasp-hold",en:"grasp",es:"agarrar, asir",sense:"sujetar con la mano",ipa:"/ɡrɑːsp/",fen:"He grasped the rail as the ship rolled.",fes:"Se agarró al pasamanos cuando el buque dio un balance.",assoc:{bridge:"grapa",scene:"Hulk, furioso y verde, AGARRA una grapadora del tamaño de un autobús. De un puñetazo clava una GRAPA de acero que une dos rascacielos, y luego se agarra él mismo a un puente con las dos manos para no caer.",funny:"La grapa es tan grande que las palomas la usan de tobogán.",recall:"El agarre bestial de Hulk sujetando la grapa es grasp: agarrar con fuerza.",why:"«grasp» suena a «grap(a)»; el agarre potente fija el significado."}},
 {id:"foster",en:"foster",es:"fomentar",sense:"favorecer el desarrollo de algo",ipa:"/ˈfɒstə/",fen:"Sport fosters discipline and teamwork.",fes:"El deporte fomenta la disciplina y el trabajo en equipo.",assoc:{bridge:"fósforo",scene:"Un jardinero enciende un FÓSFORO diminuto y lo acerca a una semilla. Al instante brota un bosque entero a cámara rápida: árboles disparándose al cielo, flores explotando de colores, lianas trepando por todas partes.",funny:"El jardinero sale volando por los aires montado en un girasol de treinta metros que no para de crecer.",recall:"El fósforo que hace crecer todo de golpe es foster: fomentar, hacer crecer.",why:"«foster» suena a «fósfor(o)»; la explosión de crecimiento representa «fomentar»."}},
-{id:"hone",en:"hone",es:"perfeccionar, pulir",sense:"una destreza",ipa:"/həʊn/",fen:"I am honing my writing skills for the exam.",fes:"Estoy puliendo mi expresión escrita para el examen.",assoc:{bridge:"jonrón (home run)",scene:"Un samurái afila su katana una y otra vez sobre una piedra, obsesionado, durante años. Cuando por fin está perfecta, batea una pelota de béisbol y hace un JONRÓN que manda la bola a la Luna.",funny:"La espada está tan pulida que el samurái se peina mirándose en el filo antes de cada golpe.",recall:"Afilar hasta la perfección para clavar el jonrón es hone: perfeccionar, pulir.",why:"«hone» suena al «hon-» de «jonrón/home run»; afilar la katana representa «pulir una destreza»."}},
+{id:"hone",en:"hone",es:"perfeccionar, pulir",sense:"una destreza",ipa:"/həʊn/",fen:"I am honing my writing skills for the exam.",fes:"Estoy puliendo mi expresión escrita para el examen.",assoc:{bridge:"jonrón (home run)",scene:"Un bateador obsesivo lija y PULE su bate día y noche, hasta dejar la madera perfecta y reluciente. Cuando por fin lo tiene a punto, sale al campo, batea y clava un JONRÓN que manda la bola hasta la Luna.",funny:"Ha pulido tanto el bate que la pelota rebota como si tocara un espejo y no vuelve a caer nunca.",recall:"Pulir la herramienta con obsesión hasta dominar el golpe es hone: perfeccionar, pulir una destreza.",why:"«hone» suena al «hon-» de «home run/jonrón»; pulir el bate hasta la maestría representa «pulir una destreza», igual que pules tu inglés en la frase."}},
 {id:"strive",en:"strive",es:"esforzarse",sense:"por conseguir algo",ipa:"/straɪv/",fen:"We strive to improve a little every day.",fes:"Nos esforzamos por mejorar un poco cada día.",assoc:{bridge:"estribo",scene:"Un jinete diminuto intenta subir a un caballo de diez metros de alto. Se agarra al ESTRIBO gigante y trepa con todas sus fuerzas: suda a chorros, resopla, los músculos a punto de reventar, mientras el caballo relincha impaciente.",funny:"Cada vez que resbala, cae sobre un montón de heno y vuelve a empezar, ya con siete pares de zapatillas rotas.",recall:"Ese esfuerzo sobrehumano por subir al estribo es strive: esforzarse al límite.",why:"«strive» suena a «estribo», y la imagen del esfuerzo brutal ancla el significado."}},
 {id:"address-issue",en:"address",es:"abordar, tratar",sense:"un problema o asunto",ipa:"/əˈdres/",fen:"The report fails to address the real issue.",fes:"El informe no aborda el problema de fondo."},
 {id:"address-speak",en:"address",es:"dirigirse a",sense:"hablar ante un grupo",ipa:"/əˈdres/",fen:"The admiral addressed the crew before departure.",fes:"El almirante se dirigió a la dotación antes de la salida."},
@@ -147,8 +150,8 @@ const SEED = [
 {id:"assess",en:"assess",es:"evaluar, valorar",sense:"analizar una situación",ipa:"/əˈses/",fen:"We need to assess the damage before sailing.",fes:"Tenemos que evaluar los daños antes de navegar."},
 {id:"nevertheless",en:"nevertheless",es:"no obstante, sin embargo",sense:"conector formal de contraste",ipa:"/ˌnevəðəˈles/",fen:"The sea was rough; nevertheless, we completed the exercise.",fes:"La mar estaba dura; no obstante, completamos el ejercicio."},
 {id:"furthermore",en:"furthermore",es:"además, es más",sense:"conector formal de adición",ipa:"/ˌfɜːðəˈmɔː/",fen:"Furthermore, the new system reduces fuel consumption.",fes:"Además, el nuevo sistema reduce el consumo de combustible."},
-{id:"albeit",en:"albeit",es:"aunque, si bien",sense:"concesivo culto",ipa:"/ɔːlˈbiːɪt/",fen:"It was a useful course, albeit a demanding one.",fes:"Fue un curso útil, aunque exigente."},
-{id:"notwithstanding",en:"notwithstanding",es:"a pesar de, pese a",sense:"concesivo formal",ipa:"/ˌnɒtwɪθˈstændɪŋ/",fen:"Notwithstanding the weather, the drill went ahead.",fes:"A pesar del tiempo, el simulacro siguió adelante."},
+{id:"albeit",en:"albeit",es:"aunque, si bien",sense:"concesivo culto",ipa:"/ɔːlˈbiːɪt/",fen:"It was a useful course, albeit a demanding one.",fes:"Fue un curso útil, aunque exigente.",assoc:{bridge:"all be it → «aunque (así) sea»",scene:"Un caballero medieval negocia la rendición de un castillo. El enemigo le ofrece un trato durísimo y él, cruzándose de brazos, acaba cediendo a regañadientes: «Está bien... ALL BE IT (sea como sea, aunque me cueste sangre), acepto el trato».",funny:"Firma con cara de asco mientras el dragón, detrás, le seca una lágrima con la punta del ala.",recall:"Ese «sí, pero...», ese «sea como sea, aunque no me guste», es albeit: aunque, si bien.",why:"albeit viene de «all be it» (aunque ello sea) y suena «ol-BI-it», con la «be» dentro; el caballero que cede «sea como sea» fija «aunque»."}},
+{id:"notwithstanding",en:"notwithstanding",es:"a pesar de, pese a",sense:"concesivo formal",ipa:"/ˌnɒtwɪθˈstændɪŋ/",fen:"Notwithstanding the weather, the drill went ahead.",fes:"A pesar del tiempo, el simulacro siguió adelante.",assoc:{bridge:"not withstanding (nada lo resiste/detiene)",scene:"El mismo caballero del castillo marcha hacia la batalla en mitad de una tormenta brutal: granizo del tamaño de melones, rayos, viento huracanado. Nada lo detiene; avanza A PESAR DE todo, con la armadura humeante.",funny:"El granizo rebota en su yelmo tocando una melodía, pero él sigue caminando como si tal cosa.",recall:"Seguir adelante y que nada te frene, pese a todo, es notwithstanding: a pesar de.",why:"se parte en not + withstanding: nada «resiste/detiene» su avance; el caballero cruzando la tormenta fija «a pesar de»."}},
 {id:"hence",en:"hence",es:"por lo tanto, de ahí",sense:"consecuencia formal",ipa:"/hens/",fen:"The radar failed; hence the delay.",fes:"El radar falló; de ahí el retraso."},
 {id:"even-though",en:"even though",es:"aun cuando, a pesar de que",sense:"concesivo con hechos reales",ipa:"/ˈiːvn ðəʊ/",fen:"Even though I was exhausted, I kept studying.",fes:"Aun estando agotado, seguí estudiando."},
 {id:"some-extent",en:"to some extent",es:"hasta cierto punto",sense:"matizar una afirmación",ipa:"/tə sʌm ɪkˈstent/",fen:"To some extent, I agree with that view.",fes:"Hasta cierto punto, coincido con esa opinión."},
@@ -211,13 +214,14 @@ const SEED = [
 {id:"threat",en:"threat",es:"amenaza",sense:"peligro potencial",ipa:"/θret/",fen:"Hybrid threats are difficult to detect.",fes:"Las amenazas híbridas son difíciles de detectar."},
 {id:"ceasefire",en:"ceasefire",es:"alto el fuego",sense:"cese de hostilidades",ipa:"/ˈsiːsfaɪə/",fen:"The ceasefire collapsed after two days.",fes:"El alto el fuego se rompió a los dos días."},
 {id:"casualty",en:"casualty",es:"baja, víctima",sense:"herido o muerto en operación",ipa:"/ˈkæʒuəlti/",fen:"The operation ended without casualties.",fes:"La operación terminó sin bajas."},
-{id:"withdrawal",en:"withdrawal",es:"retirada",sense:"repliegue de fuerzas",ipa:"/wɪðˈdrɔːəl/",fen:"The withdrawal was completed ahead of schedule.",fes:"La retirada se completó antes de lo previsto."},
+{id:"withdrawal",en:"withdrawal",es:"retirada",sense:"repliegue de fuerzas",ipa:"/wɪðˈdrɔːəl/",fen:"The withdrawal was completed ahead of schedule.",fes:"La retirada se completó antes de lo previsto.",assoc:{bridge:"with + draw (echar hacia atrás)",scene:"Tras el asedio, el ejército del caballero da media vuelta y se repliega: arrastran HACIA ATRÁS (draw back) las catapultas, los estandartes y hasta el dragón, alejándose del castillo en orden.",funny:"El dragón se resiste a irse y lo llevan a rastras como un perro que no quiere salir del parque.",recall:"Echar las tropas hacia atrás y replegarse es withdrawal: retirada. (También «sacar» dinero del cajero.)",why:"withdrawal = with + draw, «draw back» es echar hacia atrás; el ejército replegándose fija «retirada»."}},
+{id:"breach",en:"breach",es:"brecha; incumplimiento; violación",sense:"rotura o quebrantamiento (de un muro, una norma, la seguridad)",ipa:"/briːtʃ/",fen:"The leak was a serious breach of security.",fes:"La filtración fue una grave brecha de seguridad.",assoc:{bridge:"brecha (casi la misma palabra)",scene:"Un ariete golpea la muralla del castillo y abre una BRECHA enorme; por ese boquete se cuela el enemigo. La misma imagen sirve cuando alguien abre una brecha en la seguridad y por ahí se escapa un secreto.",funny:"Por la brecha entran los soldados... y detrás el dragón, que se queda atascado a medias moviendo las patitas en el aire.",recall:"Una rotura en el muro, o el quebrantamiento de una norma o de la seguridad, es breach: brecha, incumplimiento.",why:"breach y «brecha» vienen de la misma raíz y suenan casi igual; el boquete en la muralla fija el significado."}},
 {id:"surveillance",en:"surveillance",es:"vigilancia",sense:"observación continua",ipa:"/səˈveɪləns/",fen:"The area is under constant surveillance.",fes:"La zona está bajo vigilancia constante."},
 {id:"intelligence-mil",en:"intelligence",es:"inteligencia, información",sense:"información militar",ipa:"/ɪnˈtelɪdʒəns/",fen:"Intelligence reports confirmed the movement of troops.",fes:"Los informes de inteligencia confirmaron el movimiento de tropas."},
 {id:"deployment",en:"deployment",es:"despliegue",sense:"misión fuera de la base",ipa:"/dɪˈplɔɪmənt/",fen:"This is her third deployment abroad.",fes:"Este es su tercer despliegue en el extranjero."},
 {id:"task-force",en:"task force",es:"fuerza operativa, agrupación",sense:"unidad creada para una misión",ipa:"/ˈtɑːsk fɔːs/",fen:"A naval task force was sent to the area.",fes:"Se envió una agrupación naval a la zona."},
 {id:"headquarters",en:"headquarters",es:"cuartel general",sense:"centro de mando",ipa:"/ˌhedˈkwɔːtəz/",fen:"Orders came directly from headquarters.",fes:"Las órdenes llegaron directamente del cuartel general."},
-{id:"enlist",en:"enlist",es:"alistarse",sense:"ingresar en las fuerzas armadas",ipa:"/ɪnˈlɪst/",fen:"He enlisted in the navy at eighteen.",fes:"Se alistó en la armada a los dieciocho."},
+{id:"enlist",en:"enlist",es:"alistarse",sense:"ingresar en las fuerzas armadas",ipa:"/ɪnˈlɪst/",fen:"He enlisted in the navy at eighteen.",fes:"Se alistó en la armada a los dieciocho.",assoc:{bridge:"en la lista",scene:"Un joven entra en la oficina de reclutamiento, coge un bolígrafo enorme y escribe su nombre EN LA LISTA de la Armada. En cuanto firma, le cae del techo el uniforme entero, ya puesto.",funny:"La lista es tan larga que baja tres pisos por la escalera y sale por la puerta a la calle.",recall:"Apuntarse, poner tu nombre en la lista para servir, es enlist: alistarse.",why:"enlist = en + list, «poner en la lista»; suena «en-list» ≈ «en la lista», y alistarse es exactamente eso."}},
 {id:"escalate",en:"escalate",es:"escalar, intensificarse",sense:"un conflicto que crece",ipa:"/ˈeskəleɪt/",fen:"The conflict could escalate quickly.",fes:"El conflicto podría intensificarse rápidamente."},
 {id:"rely-on",en:"rely on",es:"depender de, confiar en",sense:"necesitar algo o a alguien",ipa:"/rɪˈlaɪ ɒn/",fen:"Modern ships rely on complex software.",fes:"Los buques modernos dependen de programas complejos."},
 {id:"human-rights",en:"human rights",es:"derechos humanos",sense:"tema recurrente del examen",ipa:"/ˌhjuːmən ˈraɪts/",fen:"Human rights must be protected even in wartime.",fes:"Los derechos humanos deben protegerse incluso en tiempo de guerra."},
@@ -252,7 +256,27 @@ const SEED = [
 {id:"setback",en:"setback",es:"revés, contratiempo",sense:"obstáculo temporal",ipa:"/ˈsetbæk/",fen:"Treat every setback as a lesson.",fes:"Trata cada revés como una lección.",assoc:{bridge:"empujón hacia atrás (set back)",scene:"Un tenista sube eufórico al podio, levanta la copa... y una mano gigante que baja del cielo lo EMPUJA HACIA ATRÁS escaleras abajo. Rueda hasta el aparcamiento entre trompetas de victoria que se desinflan.",funny:"La copa rebota detrás de él, escalón a escalón, haciendo «bong, bong, bong».",recall:"Ese empujón que te echa para atrás justo cuando ganabas es un setback: un revés.",why:"«set back» significa literalmente «echar hacia atrás»; el empujón fija «contratiempo»."}},
 {id:"in-charge",en:"in charge of",es:"al mando de, a cargo de",sense:"con responsabilidad sobre algo",ipa:"/ɪn ˈtʃɑːdʒ əv/",fen:"She is in charge of the engineering department.",fes:"Ella está al mando del departamento de máquinas."},
 {id:"charge-money",en:"charge",es:"cobrar",sense:"pedir dinero por algo",ipa:"/tʃɑːdʒ/",fen:"They charged us twice for the same service.",fes:"Nos cobraron dos veces por el mismo servicio."},
-{id:"charge-battery",en:"charge",es:"cargar",sense:"una batería o dispositivo",ipa:"/tʃɑːdʒ/",fen:"Charge the radio before the watch.",fes:"Carga la radio antes de la guardia."}
+{id:"charge-battery",en:"charge",es:"cargar",sense:"una batería o dispositivo",ipa:"/tʃɑːdʒ/",fen:"Charge the radio before the watch.",fes:"Carga la radio antes de la guardia."},
+{id:"sovereignty",en:"sovereignty",es:"soberanía",sense:"poder supremo de un Estado",ipa:"/ˈsɒvrənti/",fen:"The treaty respects the sovereignty of every member state.",fes:"El tratado respeta la soberanía de cada Estado miembro."},
+{id:"sanctions",en:"sanctions",es:"sanciones",sense:"medidas punitivas entre Estados",ipa:"/ˈsæŋkʃənz/",fen:"The council imposed economic sanctions on the regime.",fes:"El consejo impuso sanciones económicas al régimen."},
+{id:"accountability",en:"accountability",es:"rendición de cuentas",sense:"responsabilidad de dar explicaciones",ipa:"/əˌkaʊntəˈbɪləti/",fen:"Leadership requires accountability at every level.",fes:"El liderazgo exige rendición de cuentas a todos los niveles."},
+{id:"muster",en:"muster",es:"pasar lista, reunir",sense:"formar a la tropa o reunir fuerzas",ipa:"/ˈmʌstə/",fen:"The crew was mustered on deck at dawn.",fes:"Se pasó lista a la dotación en cubierta al amanecer.",assoc:{bridge:"mostrar / muestra (mismo origen: latín monstrare)",scene:"El almirante pasa REVISTA a la tropa formada en cubierta: la va MOSTRANDO fila por fila, enseñándola como en un escaparate para inspeccionarla. La palabra nació justo de ahí, de «mostrar».",funny:"Cada marinero, al ser mostrado, gira sobre sí mismo como modelo de pasarela mientras suena música de desfile.",recall:"Reunir y formar a la tropa para mostrarla y pasarle revista es muster: pasar lista, reunir.",why:"muster y «mostrar/muestra» vienen ambos del latín monstrare; pasar revista es literalmente mostrar la tropa, y eso fija el significado."}},
+{id:"reinforcement",en:"reinforcement",es:"refuerzo, refuerzos",sense:"tropas o medios de apoyo",ipa:"/ˌriːɪnˈfɔːsmənt/",fen:"Reinforcements arrived just in time to hold the line.",fes:"Los refuerzos llegaron justo a tiempo para mantener la línea."},
+{id:"resilience",en:"resilience",es:"resiliencia, capacidad de recuperación",sense:"fortaleza para reponerse de la adversidad",ipa:"/rɪˈzɪliəns/",fen:"Resilience is what keeps you going after a setback.",fes:"La resiliencia es lo que te hace seguir tras un revés.",assoc:{bridge:"resorte (muelle)",scene:"Un muñeco con un RESORTE gigante por cuerpo recibe un puñetazo que lo aplasta contra el suelo... y ¡BOING! rebota de vuelta más alto y más firme que antes.",funny:"Cuanto más fuerte lo golpean, más arriba rebota, hasta salir disparado por encima de los tejados.",recall:"Ese rebote que lo devuelve entero tras el golpe es resilience: capacidad de recuperarse.",why:"«resilience» empieza como «resi-» y el resorte que rebota fija «recuperarse»."}},
+{id:"momentum",en:"momentum",es:"impulso, inercia",sense:"fuerza que mantiene algo en marcha",ipa:"/məˈmentəm/",fen:"The team lost momentum in the second half.",fes:"El equipo perdió impulso en la segunda parte."},
+{id:"stamina",en:"stamina",es:"aguante, fondo físico",sense:"resistencia sostenida",ipa:"/ˈstæmɪnə/",fen:"Long matches demand real stamina.",fes:"Los partidos largos exigen mucho fondo físico.",assoc:{bridge:"está mina",scene:"Un minero corre una maratón por un túnel interminable gritando «¡ESTÁ MINA no se acaba nunca!», y sigue y sigue, horas, sin quedarse sin aire.",funny:"Va repartiendo picos a otros corredores que caen agotados mientras él ni suda.",recall:"Ese aguante para seguir sin fin es stamina: fondo físico, resistencia.",why:"«stamina» suena a «está mina»; correr sin parar fija «aguante»."}},
+{id:"streamline",en:"streamline",es:"agilizar, optimizar",sense:"simplificar un proceso",ipa:"/ˈstriːmlaɪn/",fen:"We streamlined the whole procedure.",fes:"Agilizamos todo el procedimiento."},
+{id:"uphold",en:"uphold",es:"defender, mantener, hacer cumplir",sense:"una ley, un valor o una decisión",ipa:"/ʌpˈhəʊld/",fen:"Every officer swears to uphold the law.",fes:"Todo oficial jura defender la ley.",assoc:{bridge:"up + hold (sostener en alto)",scene:"En lo alto de la muralla, el caballero SOSTIENE EN ALTO el estandarte con la ley grabada, aguantando el vendaval con los dos brazos para que no caiga ni se doble. Pase lo que pase, lo mantiene arriba.",funny:"Se le duermen los brazos, pero antes que bajar el estandarte deja que se lo lleve por los aires a él con banderín y todo.",recall:"Sostener en alto y hacer cumplir una ley o un valor es uphold: defender, mantener.",why:"up + hold = «sostener en alto»; el caballero que no deja caer el estandarte fija «mantener/defender»."}},
+{id:"surrender",en:"surrender",es:"rendirse, entregarse",sense:"deponer las armas",ipa:"/səˈrendə/",fen:"The garrison refused to surrender.",fes:"La guarnición se negó a rendirse.",assoc:{bridge:"-render ≈ rendir(se)",scene:"Sobre la muralla del castillo, el comandante enemigo ondea una bandera blanca enorme y arroja su espada al foso: se RINDE y entrega la plaza.",funny:"Lanza también el casco, la capa y hasta al dragón, que cae al foso con un chapoteo enorme.",recall:"Bajar las armas y entregarse es surrender: rendirse.",why:"surrender lleva dentro «render» ≈ «rendir(se)»; la bandera blanca fija el significado."}},
+{id:"besiege",en:"besiege",es:"asediar, sitiar",sense:"cercar una plaza",ipa:"/bɪˈsiːdʒ/",fen:"Enemy forces besieged the fortress for weeks.",fes:"Las fuerzas enemigas asediaron la fortaleza durante semanas.",assoc:{bridge:"be + siege (asedio)",scene:"El ejército rodea el castillo por completo y monta el ASEDIO: nadie entra ni sale, las provisiones se acaban dentro. Es el paso previo a abrir la brecha en la muralla.",funny:"Los sitiadores se aburren tanto esperando que montan un puestecillo de perritos calientes frente a la puerta.",recall:"Rodear y cercar una plaza para rendirla es besiege: asediar, sitiar.",why:"be + siege = «poner asedio»; el cerco al castillo, antes de la brecha, fija «asediar»."}},
+{id:"morale",en:"morale",es:"moral, ánimo (de la tropa)",sense:"OJO falso amigo: ánimo/entusiasmo, NO «moral/ética» (eso es moral)",ipa:"/məˈrɑːl/",fen:"A good leader keeps morale high in hard times.",fes:"Un buen líder mantiene alta la moral en los momentos difíciles.",assoc:{bridge:"moral + E (de Energía/Entusiasmo)",scene:"La tropa está agotada y hundida; el líder les grita un discurso y, de golpe, se les dispara el ÁNIMO: estandartes en alto, tambores, todos rugiendo con los puños al cielo.",funny:"El subidón es tal que hasta las tiendas de campaña se ponen firmes y sacan pecho.",recall:"El ánimo, la confianza y las ganas de un grupo es morale.",why:"lleva una -e final y se acentúa «mo-RÁL»; esa E extra es la Energía de la tropa. No confundir con «moral/ética», que en inglés es moral (MO-ral)."}},
+{id:"hindsight",en:"hindsight",es:"retrospectiva, visión a posteriori",sense:"ver claro algo una vez ha pasado",ipa:"/ˈhaɪndsaɪt/",fen:"In hindsight, we should have left earlier.",fes:"En retrospectiva, deberíamos habernos ido antes.",assoc:{bridge:"hind (parte de atrás) + sight (vista)",scene:"Un búho sabio vuela mirando HACIA ATRÁS por encima del ala, contemplando el camino ya recorrido; ahora ve clarísimos los baches que no supo ver cuando pasaba por ellos.",funny:"De tanto mirar atrás se choca de frente con una rama, y piensa «esto también lo veré claro… luego».",recall:"Ver claro un asunto cuando ya ha ocurrido es hindsight: retrospectiva.",why:"hind = trasero/posterior + sight = vista; mirar atrás y verlo todo claro fija «en retrospectiva»."}},
+{id:"shortcoming",en:"shortcoming",es:"deficiencia, carencia, punto débil",sense:"defecto o falta de algo",ipa:"/ˈʃɔːtkʌmɪŋ/",fen:"The plan has one serious shortcoming.",fes:"El plan tiene una deficiencia grave.",assoc:{bridge:"come short (quedarse corto)",scene:"Un atleta de salto de longitud coge carrerilla, salta con todas sus fuerzas... y cae CORTO, justo antes de la línea. El graderío suelta un «ohhh» de decepción.",funny:"Estira tanto los brazos buscando la línea que se le alargan como goma, y aun así no llega.",recall:"Quedarse corto, que le falte algo, es un shortcoming: una deficiencia.",why:"come + short = «quedarse corto»; el salto que no llega a la línea fija «carencia, punto débil»."}},
+{id:"thorough",en:"thorough",es:"minucioso, exhaustivo, concienzudo",sense:"pron. /ˈθʌrə/, NO confundir con through",ipa:"/ˈθʌrə/",fen:"The inspection was slow but thorough.",fes:"La inspección fue lenta pero minuciosa."},
+{id:"in-the-wake-of",en:"in the wake of",es:"a raíz de, tras",sense:"justo después de un suceso, casi siempre grave",ipa:"/ɪn ðə ˈweɪk əv/",fen:"In the wake of the crisis, new safety rules were introduced across the fleet.",fes:"A raíz de la crisis, se implantaron nuevas normas de seguridad en toda la flota.",assoc:{bridge:"wake = estela del barco",scene:"Un buque avanza y deja tras de sí una ESTELA de espuma enorme. Todo lo que ocurre «in the wake of» un suceso es lo que viene arrastrado justo detrás, en esa estela.",funny:"En la estela van surfeando las gaviotas, unos delfines y hasta el dragón con flotador.",recall:"Lo que sucede a raíz de algo, justo en su estela, es in the wake of: a raíz de, tras.",why:"«wake» es la estela que deja el barco; lo que viene en la estela = «a raíz de»."}},
+{id:"come-to-terms-with",en:"come to terms with",es:"aceptar, hacerse a la idea de, asumir",sense:"reconciliarse con algo difícil",ipa:"/kʌm tə ˈtɜːmz wɪð/",fen:"It took him a long time to come to terms with the defeat.",fes:"Le costó mucho tiempo hacerse a la idea de la derrota."},
+{id:"in-the-face-of",en:"in the face of",es:"ante, frente a",sense:"enfrentado a un peligro o dificultad",ipa:"/ɪn ðə ˈfeɪs əv/",fen:"She stayed calm in the face of real danger.",fes:"Se mantuvo serena ante un peligro real."},
+{id:"on-the-grounds-that",en:"on the grounds that",es:"alegando que, con el argumento de que",sense:"dar el motivo de una decisión",ipa:"/ɒn ðə ˈɡraʊndz ðæt/",fen:"The appeal was rejected on the grounds that it lacked evidence.",fes:"El recurso se rechazó alegando que carecía de pruebas."}
 ];
 
 /* ================= NIVELES ================= */
@@ -275,13 +299,16 @@ const DEMOTES = {
 
 /* ================= ESTADO ================= */
 const KEY="bitacora-slp-v1";
-const VERSION="1.4";
+const VERSION="1.7";
 let S;
-const isExpr=c=>c.en.trim().includes(" ");
+/* Doble puntuación SOLO para expresiones largas (4+ palabras), cuya frase de
+   ejemplo también es larga. Dos o tres palabras puntúan como una palabra. */
+const isExpr=c=>c.en.trim().split(/\s+/).filter(Boolean).length>=4;
 function migrate(){
   S.cards.forEach(c=>{if(c.seen==null)c.seen=0;});
+  // Las fichas del deck toman siempre la asociación más reciente del archivo.
   SEED.forEach(s=>{
-    if(s.assoc){const c=S.cards.find(x=>x.id===s.id);if(c&&!c.assoc)c.assoc=s.assoc;}
+    if(s.assoc){const c=S.cards.find(x=>x.id===s.id);if(c)c.assoc=s.assoc;}
   });
 }
 function logDay(p,d){
@@ -309,9 +336,22 @@ function load(){
   save();
 }
 function save(){
+  S.ts=Date.now();
   try{localStorage.setItem(KEY,JSON.stringify(S));}
   catch(e){toast("No se pudo guardar (¿modo privado?)");}
 }
+/* Si la app está abierta a la vez en Safari y como app instalada, al volver a
+   primer plano se sincroniza con lo último guardado en vez de machacarlo. */
+function refreshFromStorage(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(!raw)return;
+    const d=JSON.parse(raw);
+    if(d&&d.ts&&(!S.ts||d.ts>S.ts)){S=d;home();}
+  }catch(e){}
+}
+document.addEventListener("visibilitychange",function(){if(!document.hidden)refreshFromStorage();});
+window.addEventListener("pageshow",function(e){if(e.persisted)refreshFromStorage();});
 function today(){
   const d=new Date();
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
@@ -354,7 +394,7 @@ function speak(txt){
 /* ================= UI ================= */
 const app=document.getElementById("app");
 const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
-const XB='<span class="sense" style="color:var(--brass);border-color:var(--brass);margin-left:4px">expresión ×2</span>';
+const XB='<span class="sense" style="color:var(--brass);border-color:var(--brass);margin-left:4px">expresión larga ×2</span>';
 function assocBlock(c){
   if(!c.assoc)return "";
   const a=c.assoc;
@@ -422,7 +462,8 @@ function home(){
     <button class="big" onclick="newCards()"><span>Añadir palabras nuevas</span><span class="n">${pending}</span></button>
     <button class="big" onclick="progressView('d')"><span>Progreso</span><span class="n">▤</span></button>
     <button class="big" onclick="dataView()"><span>Datos y copia de seguridad</span><span class="n">›</span></button>
-  </div>`;
+  </div>
+  <p class="version">Bitácora SLP · v${VERSION}</p>`;
 }
 
 /* ---------- REPASO ---------- */
@@ -607,8 +648,11 @@ function progressView(tab){
   <div class="card">
     <p class="lvltxt" style="margin-bottom:12px">${caption}</p>
     ${chart}
-    <p class="hint">★ = dominadas ese ${per} · Puntos: palabra 1 / 3 / 10 · expresión 2 / 6 / 20</p>
-  </div>`+backBtn();
+    <p class="hint">★ = dominadas ese ${per} · Puntos: palabra 1 / 3 / 10 · expresión larga (4+ palabras) 2 / 6 / 20</p>
+  </div>
+  <h2>En travesía</h2>
+  <p class="sub">Fichas esperando su comprobación. No se pueden repasar antes de tiempo.</p>
+  <div class="pipeline" style="margin-top:12px"><span>1 día <b>${S.cards.filter(c=>c.st==="d1").length}</b></span><span>1 semana <b>${S.cards.filter(c=>c.st==="w1"||c.st==="w2").length}</b></span><span>1 mes <b>${S.cards.filter(c=>c.st==="m1"||c.st==="m2").length}</b></span></div>`+backBtn();
 }
 
 /* ---------- APRENDIENDO ---------- */
@@ -619,7 +663,7 @@ function learningList(){
   else h+='<br>';
   if(!list.length)h+='<div class="empty">No hay fichas en estudio.<br>Añade palabras nuevas al cuaderno.</div>';
   list.forEach(c=>{
-    const seen=c.seen?'<span class="seen">'+c.seen+'× cuesta</span>':'';
+    const seen=c.seen?'<span class="seen">'+c.seen+' 🏋️</span>':'';
     h+=`<div class="card">${levelRow(c).replace('</div>',seen+'</div>')}
       <div class="word">${esc(c.en)}</div><div class="ipa">${esc(c.ipa)}</div>
       <div><span class="sense">${esc(c.sense)}</span>${isExpr(c)?XB:""}</div>
@@ -673,11 +717,12 @@ function trainCard(){
   app.innerHTML=`
   <div class="progress">Entrenamiento · ${tPool.length} en cola</div>
   <div class="card">
-    <div class="levelrow"><span class="lvltxt">${tDir==="en"?"EN → ES":"ES → EN"}</span>${c.seen?'<span class="seen">'+c.seen+'× cuesta</span>':''}</div>
+    <div class="levelrow"><span class="lvltxt">${tDir==="en"?"EN → ES":"ES → EN"}</span>${c.seen?'<span class="seen">'+c.seen+' 🏋️</span>':''}</div>
     ${front}
     <div id="tans" class="hidden"></div>
   </div>
-  <div id="tctrl"><button class="primary" onclick="trainReveal()">Mostrar traducción</button></div>`;
+  <div id="tctrl"><button class="primary" onclick="trainReveal()">Mostrar traducción</button></div>
+  <button class="back" onclick="learningList()">✕ Terminar entrenamiento</button>`;
 }
 function trainReveal(){
   const c=byId(tPool[0]);
@@ -749,7 +794,7 @@ function dataView(){
   <h2>Datos</h2>
   <div class="card">
     <p class="sub">Fichas totales: <b style="color:var(--ivory)">${S.cards.length}</b> · En juego: <b style="color:var(--ivory)">${inplay}</b> · Dominadas: <b style="color:var(--brass)">${done}</b> · Puntos: <b style="color:var(--brass)">${S.pts}</b></p>
-    <p class="sub" style="margin-top:6px">Palabras: <b style="color:var(--ivory)">${S.cards.length-nexpr}</b> · Expresiones: <b style="color:var(--ivory)">${nexpr}</b> (puntúan el doble)</p>
+    <p class="sub" style="margin-top:6px">Palabras y expresiones cortas: <b style="color:var(--ivory)">${S.cards.length-nexpr}</b> · Expresiones largas: <b style="color:var(--ivory)">${nexpr}</b> (4+ palabras, puntúan el doble)</p>
   </div>
   <div class="menu"><button class="big" onclick="masteredList()"><span>Ver dominadas</span><span class="n">${done}</span></button></div>
   <h2>Copia de seguridad</h2>
@@ -764,8 +809,7 @@ function dataView(){
   <div class="menu">
     <button class="primary" onclick="importBatch()">Añadir tanda nueva</button>
     <button class="ghost" onclick="restoreBackup()">Restaurar copia completa</button>
-  </div>
-  <p class="sub" style="text-align:center;margin-top:6px">Bitácora SLP · v${VERSION}</p>`+backBtn();
+  </div>`+backBtn();
 }
 function masteredList(){
   const list=S.cards.filter(c=>c.st==="done");
