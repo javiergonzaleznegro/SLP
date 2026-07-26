@@ -299,7 +299,7 @@ const DEMOTES = {
 
 /* ================= ESTADO ================= */
 const KEY="bitacora-slp-v1";
-const VERSION="1.8";
+const VERSION="1.9";
 let S;
 /* Doble puntuación SOLO para expresiones largas (4+ palabras), cuya frase de
    ejemplo también es larga. Dos o tres palabras puntúan como una palabra. */
@@ -658,7 +658,7 @@ function progressView(tab){
 /* ---------- APRENDIENDO ---------- */
 function learningList(){
   const list=S.cards.filter(c=>c.st==="learning");
-  let h='<h2>Aprendiendo</h2><p class="sub">Estudia estas fichas. Cuando tengas una memorizada, márcala y mañana te la preguntaré de inglés a español.</p>';
+  let h=topBack()+'<h2 style="margin-top:6px">Aprendiendo</h2><p class="sub">Estudia estas fichas. Cuando tengas una memorizada, márcala y mañana te la preguntaré de inglés a español.</p>';
   if(list.length>1)h+='<div class="menu" style="margin-top:14px"><button class="primary" onclick="trainStart()">🎯 Entrenar estas '+list.length+' fichas</button></div>';
   else h+='<br>';
   if(!list.length)h+='<div class="empty">No hay fichas en estudio.<br>Añade palabras nuevas al cuaderno.</div>';
@@ -813,7 +813,7 @@ function dataView(){
 }
 function masteredList(){
   const list=S.cards.filter(c=>c.st==="done");
-  let h='<h2>Dominadas</h2><p class="sub">Tu botín. Estas ya son tuyas.</p><br>';
+  let h=topBack()+'<h2 style="margin-top:6px">Dominadas</h2><p class="sub">Tu botín. Estas ya son tuyas.</p><br>';
   if(!list.length)h+='<div class="empty">Aún ninguna.<br>La primera cae en unos 75 días de trabajo constante.</div>';
   list.forEach(c=>{
     h+=`<div class="card">${levelRow(c)}
@@ -868,6 +868,7 @@ function restoreBackup(){
 }
 
 const backBtn=()=>'<button class="back" onclick="home()">‹ Volver al panel</button>';
+const topBack=(fn)=>'<button class="back" style="padding:10px 0 4px" onclick="'+(fn||"home()")+'">‹ Volver al panel</button>';
 
 /* ================= ARRANQUE ================= */
 load();

@@ -5,7 +5,7 @@
      Así las actualizaciones entran solas sin quedarse pegada una versión vieja.
    - Iconos y manifiesto: cache-first (no cambian casi nunca).
    Al publicar una versión nueva, sube el número de CACHE. */
-const CACHE = "bitacora-slp-v19";
+const CACHE = "bitacora-slp-v20";
 const SHELL = ["./", "./index.html", "./manifest.json"];
 
 self.addEventListener("install", function (e) {
