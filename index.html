@@ -299,7 +299,7 @@ const DEMOTES = {
 
 /* ================= ESTADO ================= */
 const KEY="bitacora-slp-v1";
-const VERSION="1.7";
+const VERSION="1.8";
 let S;
 /* Doble puntuación SOLO para expresiones largas (4+ palabras), cuya frase de
    ejemplo también es larga. Dos o tres palabras puntúan como una palabra. */
@@ -877,7 +877,21 @@ home();
    Si se abre el archivo suelto (sin servidor) falla en silencio y no pasa nada. */
 if("serviceWorker" in navigator){
   window.addEventListener("load",function(){
-    navigator.serviceWorker.register("sw.js").catch(function(){});
+    navigator.serviceWorker.register("sw.js").then(function(reg){
+      reg.update();
+      setInterval(function(){reg.update();},60*60*1000);
+    }).catch(function(){});
+  });
+  var swReloaded=false;
+  navigator.serviceWorker.addEventListener("controllerchange",function(){
+    if(swReloaded)return;
+    swReloaded=true;
+    location.reload();
+  });
+  document.addEventListener("visibilitychange",function(){
+    if(!document.hidden&&navigator.serviceWorker.getRegistration){
+      navigator.serviceWorker.getRegistration().then(function(reg){if(reg)reg.update();}).catch(function(){});
+    }
   });
 }
 </script>

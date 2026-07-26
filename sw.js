@@ -1,10 +1,11 @@
 /* Bitácora SLP - service worker
-   Guarda la app en el dispositivo para que funcione sin conexión.
-   Al publicar una versión nueva, sube el CACHE (v14 -> v15...) y se
-   actualizará sola la próxima vez que haya conexión. */
-const CACHE = "bitacora-slp-v18";
-
-/* Solo se precargan recursos garantizados; los iconos se cachean al vuelo. */
+   Estrategia:
+   - La app (index.html y navegaciones): NETWORK-FIRST. Si hay conexión, coge
+     siempre la última versión publicada; si no hay, tira de la copia guardada.
+     Así las actualizaciones entran solas sin quedarse pegada una versión vieja.
+   - Iconos y manifiesto: cache-first (no cambian casi nunca).
+   Al publicar una versión nueva, sube el número de CACHE. */
+const CACHE = "bitacora-slp-v19";
 const SHELL = ["./", "./index.html", "./manifest.json"];
 
 self.addEventListener("install", function (e) {
@@ -23,13 +24,37 @@ self.addEventListener("activate", function (e) {
 });
 
 self.addEventListener("fetch", function (e) {
-  if (e.request.method !== "GET") return;
-  e.respondWith(
-    caches.match(e.request).then(function (hit) {
-      if (hit) return hit;
-      return fetch(e.request).then(function (resp) {
+  var req = e.request;
+  if (req.method !== "GET") return;
+
+  var url = new URL(req.url);
+  var isApp = req.mode === "navigate" ||
+              url.pathname.endsWith("/") ||
+              url.pathname.endsWith("index.html");
+
+  if (isApp) {
+    /* NETWORK-FIRST: intenta la red; si falla, usa la copia guardada. */
+    e.respondWith(
+      fetch(req).then(function (resp) {
         var copy = resp.clone();
-        caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
+        caches.open(CACHE).then(function (c) { c.put("./index.html", copy); });
+        return resp;
+      }).catch(function () {
+        return caches.match("./index.html").then(function (hit) {
+          return hit || caches.match("./");
+        });
+      })
+    );
+    return;
+  }
+
+  /* Resto (iconos, manifiesto): cache-first. */
+  e.respondWith(
+    caches.match(req).then(function (hit) {
+      if (hit) return hit;
+      return fetch(req).then(function (resp) {
+        var copy = resp.clone();
+        caches.open(CACHE).then(function (c) { c.put(req, copy); });
         return resp;
       }).catch(function () {
         return caches.match("./index.html");
