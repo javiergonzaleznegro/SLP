@@ -1,7 +1,7 @@
 {
-  "name": "Tarjetero de vocabulario de inglés",
-  "short_name": "Tarjetero",
-  "description": "Tarjetero de vocabulario de inglés para el examen SLP 3.3.3.3 (STANAG 6001).",
+  "name": "TAVI · Tarjetero de vocabulario",
+  "short_name": "TAVI",
+  "description": "Tarjetas para aprender vocabulario de idiomas. Edición español ⇄ inglés.",
   "lang": "es",
   "start_url": "./",
   "scope": "./",
@@ -11,18 +11,18 @@
   "theme_color": "#0C1B2A",
   "icons": [
     {
-      "src": "icon-180-v2.png",
+      "src": "icon-180-v6.png",
       "sizes": "180x180",
       "type": "image/png"
     },
     {
-      "src": "icon-512-v2.png",
+      "src": "icon-512-v6.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-512-v2.png",
+      "src": "icon-512-v6.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

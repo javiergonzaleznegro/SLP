@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0C1B2A">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-180-v2.png">
-<title>Tarjetero de vocabulario de inglés</title>
+<link rel="apple-touch-icon" href="icon-180-v6.png">
+<title>TAVI · Tarjetero de vocabulario</title>
 <style>
 :root{
   --ink:#0C1B2A;        /* azul carta náutica, fondo */
@@ -32,8 +32,12 @@ body{
 }
 .wrap{max-width:520px;margin:0 auto;padding:0 16px}
 header{padding:18px 0 10px;text-align:center;border-bottom:1px solid var(--line)}
-.brand{font-family:var(--disp);letter-spacing:.22em;font-size:13px;line-height:1.4;color:var(--brass);text-transform:uppercase}
-.brand small{display:block;letter-spacing:.18em;color:var(--faded);font-size:10px;margin-top:4px}
+.tavi{font-family:Copperplate,"Copperplate Gothic Bold",Futura,var(--disp);
+  font-size:36px;font-weight:600;letter-spacing:.34em;text-indent:.34em;line-height:1;
+  color:var(--brass);text-shadow:0 1px 0 rgba(0,0,0,.45)}
+.pair{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:10px;
+  font-family:var(--disp);font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--faded)}
+.pair svg{flex:none}
 h2{font-family:var(--disp);font-weight:500;letter-spacing:.14em;text-transform:uppercase;font-size:15px;color:var(--brass);margin:22px 0 12px}
 .sub{color:var(--faded);font-size:14px;line-height:1.5}
 
@@ -50,7 +54,11 @@ h2{font-family:var(--disp);font-weight:500;letter-spacing:.14em;text-transform:u
 .stat span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faded)}
 .pipeline{display:flex;align-items:center;justify-content:space-between;gap:6px;border:1px dashed var(--line);border-radius:12px;padding:10px 14px;margin:-6px 0 16px;font-size:13px;color:var(--faded);flex-wrap:wrap}
 .pipeline b{color:var(--ivory);font-family:var(--disp);font-size:16px;margin-left:3px}
-.version{text-align:center;font-family:var(--disp);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--line);margin-top:22px}
+.version{text-align:center;font-family:var(--disp);font-size:9px;letter-spacing:.12em;line-height:2;text-transform:uppercase;color:var(--line);margin-top:24px}
+.actrow{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.actrow b{font-family:var(--disp);font-size:38px;font-weight:600;color:var(--brass);line-height:1}
+.barwrap{height:10px;background:var(--ink);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.barwrap i{display:block;height:100%;background:var(--brass);border-radius:6px}
 .version span{text-transform:none}
 
 /* ---------- botones ---------- */
@@ -112,7 +120,8 @@ input[type=date]{width:100%;background:var(--ink);border:1px solid var(--line);b
 <body>
 <div class="wrap">
   <header>
-    <div class="brand">Tarjetero de vocabulario<small>Inglés · SLP 3.3.3.3</small></div>
+    <div class="tavi">TAVI</div>
+    <div class="pair">Español<svg viewBox="0 0 22 14" width="22" height="14" aria-hidden="true"><g stroke="#C9A063" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M1.5 4.5h15M13 1.5l3.5 3-3.5 3"/><path d="M20.5 9.5h-15M9 12.5l-3.5-3 3.5-3"/></g></svg>Inglés</div>
   </header>
   <main id="app"></main>
 </div>
@@ -292,30 +301,38 @@ const SEED = [
 /* st: pending → learning → d1 → w1 → w2 → m1 → m2 → done
    Dirección: la 1ª comprobación de cada nivel es EN→ES; la 2ª, ES→EN */
 /* Ciclo: pending → learning → d1 → d2 → w1 → w2 → m1 → m2 → done
-   Dos comprobaciones por nivel: 1ª ES→EN, 2ª EN→ES.
+   Dos comprobaciones por nivel: 1ª EN→ES (reconocer), 2ª ES→EN (producir).
    gap = días hasta la SIGUIENTE comprobación tras acertar.
    En el nivel "1 día" se deja un día entero de margen (2 días). */
 const LV = {
-  d1:{label:"1 día · 1ª",   chev:2, dir:"es", next:"d2",  gap:2,  keep:2},
-  d2:{label:"1 día · 2ª",   chev:2, dir:"en", next:"w1",  gap:7,  keep:2},
-  w1:{label:"1 semana · 1ª",chev:3, dir:"es", next:"w2",  gap:7,  keep:7},
-  w2:{label:"1 semana · 2ª",chev:3, dir:"en", next:"m1",  gap:30, keep:7},
-  m1:{label:"1 mes · 1ª",   chev:4, dir:"es", next:"m2",  gap:30, keep:30},
-  m2:{label:"1 mes · 2ª",   chev:4, dir:"en", next:"done",gap:0,  keep:30}
+  d1:{label:"1 día · 1ª",   chev:2, dir:"en", next:"d2",  gap:2,  keep:2},
+  d2:{label:"1 día · 2ª",   chev:2, dir:"es", next:"w1",  gap:7,  keep:2},
+  w1:{label:"1 semana · 1ª",chev:3, dir:"en", next:"w2",  gap:7,  keep:7},
+  w2:{label:"1 semana · 2ª",chev:3, dir:"es", next:"m1",  gap:30, keep:7},
+  m1:{label:"1 mes · 1ª",   chev:4, dir:"en", next:"m2",  gap:30, keep:30},
+  m2:{label:"1 mes · 2ª",   chev:4, dir:"es", next:"done",gap:0,  keep:30}
 };
 /* Puntos ACUMULADOS que corresponden a cada estado (palabra suelta).
    Se cobran al completar cada nivel: 1 día = 1, 1 semana = +3, 1 mes = +10.
    Las expresiones largas (4+ palabras) valen el doble. */
 const CREDIT = {pending:0, learning:0, d1:0, d2:0, w1:1, w2:1, m1:4, m2:4, done:14};
 const creditFor=(c,st)=>(CREDIT[st]||0)*(isExpr(c)?2:1);
-/* Ajusta el total de puntos al crédito que corresponde al nuevo estado.
-   Devuelve la diferencia (negativa si se retrocede y se pierden puntos). */
+/* Puntos por superar un repaso de retención (los mismos que por el nivel de mes) */
+const REV_PTS=10;
+/* Los puntos de una palabra que YA completó el ciclo quedan blindados (c.locked):
+   reiniciar su estudio no los revierte. Antes de completarlo, sí se revierten. */
 function setCredit(c,st){
-  const target=creditFor(c,st);
+  const target=Math.max(creditFor(c,st),c.locked||0);
   const delta=target-(c.earned||0);
   c.earned=target;
   S.pts=Math.max(0,S.pts+delta);
   return delta;
+}
+/* Programa el siguiente repaso de retención entre 6 y 12 meses */
+function scheduleRevision(c){
+  const n=180+Math.floor(Math.random()*186);
+  c.due=addDays(n);
+  return n;
 }
 const DEMOTES = {
   d1:[["learning","Aprendiendo"]],
@@ -330,7 +347,7 @@ const ENTRY_GAP={d1:2, d2:2, w1:7, w2:7, m1:30, m2:30};
 
 /* ================= ESTADO ================= */
 const KEY="bitacora-slp-v1";
-const VERSION="2.7";
+const VERSION="3.6";
 let S;
 /* Doble puntuación SOLO para expresiones largas (4+ palabras), cuya frase de
    ejemplo también es larga. Dos o tres palabras puntúan como una palabra. */
@@ -340,6 +357,8 @@ function migrate(){
     if(c.seen==null)c.seen=0;
     // Crédito de puntos por ficha (para poder devolverlos al retroceder)
     if(c.earned==null)c.earned=creditFor(c,c.st);
+    if(c.locked==null)c.locked=(c.st==="done")?c.earned:0;
+    if(c.st==="done"&&!c.due)scheduleRevision(c);
   });
   // Las fichas del deck toman siempre la asociación más reciente del archivo.
   SEED.forEach(s=>{
@@ -357,7 +376,7 @@ function logDay(p,d){
 function syncSeed(){
   let added=0;
   SEED.forEach(c=>{
-    if(!S.cards.find(x=>x.id===c.id)){S.cards.push({...c,st:"pending",due:null,seen:0,earned:0});added++;}
+    if(!S.cards.find(x=>x.id===c.id)){S.cards.push({...c,st:"pending",due:null,seen:0,earned:0,locked:0});added++;}
   });
   if(!S.hist)S.hist={};
   migrate();
@@ -369,7 +388,7 @@ function load(){
     const raw=localStorage.getItem(KEY);
     if(raw){S=JSON.parse(raw);syncSeed();return;}
   }catch(e){}
-  S={cards:SEED.map(c=>({...c,st:"pending",due:null,seen:0,earned:0})),pts:0,streak:0,last:null,hist:{}};
+  S={cards:SEED.map(c=>({...c,st:"pending",due:null,seen:0,earned:0,locked:0})),pts:0,streak:0,last:null,hist:{}};
   save();
 }
 function save(){
@@ -415,7 +434,7 @@ function touchStreak(){
   S.last=t;
   S.streak=streakCount();
 }
-const dueCards=()=>S.cards.filter(c=>LV[c.st]&&c.due&&c.due<=today());
+const dueCards=()=>S.cards.filter(c=>(LV[c.st]||c.st==="done")&&c.due&&c.due<=today());
 const byId=id=>S.cards.find(c=>c.id===id);
 
 /* ================= AUDIO ================= */
@@ -505,12 +524,12 @@ function home(){
   </div>
   <div class="menu">
     <button class="big" onclick="review()"><span>Repasar hoy</span><span class="n">${due}</span></button>
-    <button class="big" onclick="learningList()"><span>Cuaderno · Aprendiendo</span><span class="n">${learning}</span></button>
+    <button class="big" onclick="learningList()"><span>Tarjetero · Aprendiendo</span><span class="n">${learning}</span></button>
     <button class="big" onclick="newCards()"><span>Añadir palabras nuevas</span><span class="n">${pending}</span></button>
     <button class="big" onclick="progressView('d')"><span>Progreso</span><span class="n">▤</span></button>
     <button class="big" onclick="dataView()"><span>Datos y copia de seguridad</span><span class="n">›</span></button>
   </div>
-  <p class="version">Tarjetero · <span>v${VERSION}</span></p>`;
+  <p class="version">Tarjetas para aprender vocabulario de idiomas<br>TAVI · <span>v${VERSION}</span></p>`;
 }
 
 /* ---------- REPASO ---------- */
@@ -532,8 +551,9 @@ function question(){
     return;
   }
   const c=byId(queue[0]);
-  const dir=LV[c.st].dir;
-  const pill=dir==="en"?"EN → ES":"ES → EN";
+  const rev=c.st==="done";
+  const dir=rev?(c.rdir||"en"):LV[c.st].dir;
+  const pill=(rev?"★ ":"")+(dir==="en"?"EN → ES":"ES → EN");
   let front;
   if(dir==="en"){
     front=`<div class="word">${esc(c.en)}</div><div class="ipa">${esc(c.ipa)}</div>
@@ -556,7 +576,7 @@ function question(){
 }
 function reveal(){
   const c=byId(queue[0]);
-  const dir=LV[c.st].dir;
+  const dir=c.st==="done"?(c.rdir||"en"):LV[c.st].dir;
   const ans=document.getElementById("answer");
   if(dir==="en"){
     ans.innerHTML=`<div class="divider"></div>
@@ -577,11 +597,21 @@ function reveal(){
 }
 function pass(){
   const c=byId(queue.shift());
-  const lv=LV[c.st];
   touchStreak();sesOk++;
-  if(lv.next==="done"){c.st="done";c.due=null;}
+  if(c.st==="done"){                       // repaso de retención superado
+    const gain=REV_PTS*(isExpr(c)?2:1);
+    S.pts+=gain; c.earned=(c.earned||0)+gain; c.locked=c.earned;
+    c.rdir=(c.rdir==="en")?"es":"en";       // alterna la dirección la próxima vez
+    const n=scheduleRevision(c);
+    logDay(gain,0); save();
+    toast("+"+gain+" · retención confirmada · vuelve en "+Math.round(n/30)+" meses");
+    question(); return;
+  }
+  const lv=LV[c.st];
+  if(lv.next==="done"){c.st="done";}
   else{c.st=lv.next;c.due=addDays(lv.gap);}
   const delta=setCredit(c,c.st);
+  if(c.st==="done"){c.locked=c.earned;scheduleRevision(c);}
   logDay(delta,c.st==="done"?1:0);
   save();
   if(c.st==="done")toast("★ Dominada · +"+delta+" puntos");
@@ -591,9 +621,18 @@ function pass(){
 }
 function fail(){
   const c=byId(queue[0]);
+  if(c.st==="done"){                       // falla un repaso de retención
+    document.getElementById("controls").innerHTML=
+      '<p class="hint" style="text-align:center;margin-bottom:10px">Sigue siendo tuya: los puntos ya conseguidos no se pierden.</p>'+
+      '<div class="menu">'+
+      '<button class="ghost" onclick="keepLevel()">↻ Volver a comprobarla en 30 días</button>'+
+      '<button class="ghost" onclick="demote(\'learning\')">‹ Volver a estudiarla desde el principio</button>'+
+      '</div>';
+    return;
+  }
   const lv=LV[c.st];
   const cost=st=>{
-    const d=creditFor(c,st)-(c.earned||0);
+    const d=Math.max(creditFor(c,st),c.locked||0)-(c.earned||0);
     return d<0?' <span style="opacity:.8">('+d+" pts)</span>":"";
   };
   let opts=`<button class="ghost" onclick="keepLevel()">↻ Repetir · te la pregunto en ${lv.keep} días</button>`;
@@ -606,7 +645,7 @@ function fail(){
 }
 function keepLevel(){
   const c=byId(queue.shift());
-  c.due=addDays(LV[c.st].keep);
+  c.due=addDays(c.st==="done"?30:LV[c.st].keep);
   touchStreak();sesKo++;save();question();
 }
 function demote(st){
@@ -637,6 +676,19 @@ function bars(data,labels,stars){
     s+='<text x="'+(i*bw+bw/2)+'" y="'+(H+18)+'" text-anchor="middle" font-size="10" fill="#7FA3C0">'+labels[i]+'</text>';
   });
   return s+'</svg>';
+}
+/* Actividad total: días usados frente a días transcurridos desde el primer uso */
+function activity(){
+  const keys=Object.keys(S.hist||{});
+  if(!keys.length)return null;
+  const first=keys.slice().sort()[0];
+  const ini=new Date(first+"T12:00:00");
+  const hoy=new Date(); hoy.setHours(12,0,0,0);
+  const total=Math.max(1,Math.round((hoy-ini)/86400000)+1);
+  const activos=keys.length;
+  const [y,m,d]=first.split("-");
+  return {activos,total,pct:Math.round(activos/total*100),
+          desde:parseInt(d,10)+" "+MESES[parseInt(m,10)-1]+" "+y};
 }
 function progressView(tab){
   if(!S.hist)S.hist={};
@@ -701,15 +753,23 @@ function progressView(tab){
     ${chart}
     <p class="hint">★ = dominadas ese ${per} · Puntos: palabra 1 / 3 / 10 · expresión larga (4+ palabras) 2 / 6 / 20</p>
   </div>
+  <h2>Actividad</h2>
+  ${(()=>{const a=activity();
+    if(!a)return '<p class="sub">Aún sin datos. Empieza a estudiar y aquí verás tu constancia.</p>';
+    return `<div class="card">
+      <div class="actrow"><b>${a.pct}%</b><span class="lvltxt">${a.activos} de ${a.total} días</span></div>
+      <div class="barwrap"><i style="width:${a.pct}%"></i></div>
+      <p class="hint">Días con estudio desde que empezaste, el ${a.desde}.</p>
+    </div>`;})()}
   <h2>En travesía</h2>
   <p class="sub">Fichas esperando su comprobación. No se pueden repasar antes de tiempo.</p>
-  <div class="pipeline" style="margin-top:12px"><span>1 día <b>${S.cards.filter(c=>c.st==="d1"||c.st==="d2").length}</b></span><span>1 semana <b>${S.cards.filter(c=>c.st==="w1"||c.st==="w2").length}</b></span><span>1 mes <b>${S.cards.filter(c=>c.st==="m1"||c.st==="m2").length}</b></span></div>`+backBtn();
+  <div class="pipeline" style="margin-top:12px"><span>1 día <b>${S.cards.filter(c=>c.st==="d1"||c.st==="d2").length}</b></span><span>1 semana <b>${S.cards.filter(c=>c.st==="w1"||c.st==="w2").length}</b></span><span>1 mes <b>${S.cards.filter(c=>c.st==="m1"||c.st==="m2").length}</b></span><span>retención <b>${S.cards.filter(c=>c.st==="done"&&c.due).length}</b></span></div>`+backBtn();
 }
 
 /* ---------- APRENDIENDO ---------- */
 function learningList(){
   const list=S.cards.filter(c=>c.st==="learning");
-  let h=topBack()+'<h2 style="margin-top:6px">Aprendiendo</h2><p class="sub">Estudia estas fichas. Cuando tengas una memorizada, márcala y dentro de dos días te la preguntaré de español a inglés.</p>';
+  let h=topBack()+'<h2 style="margin-top:6px">Aprendiendo</h2><p class="sub">Estudia estas fichas. Cuando tengas una memorizada, márcala y dentro de dos días te la preguntaré de inglés a español.</p>';
   if(list.length>1)h+='<div class="menu" style="margin-top:14px"><button class="primary" onclick="trainStart()">🎯 Entrenar estas '+list.length+' fichas</button></div>';
   else h+='<br>';
   if(!list.length)h+='<div class="empty">No hay fichas en estudio.<br>Añade palabras nuevas al cuaderno.</div>';
@@ -777,6 +837,8 @@ function trainCard(){
 }
 function trainReveal(){
   const c=byId(tPool[0]);
+  c.seen=(c.seen||0)+1;          // la repetición se cuenta aquí, al mostrar
+  touchStreak();save();
   const back=tDir==="en"
     ?`<div class="divider"></div><div class="word">${esc(c.es)}</div><div><span class="sense">${esc(c.sense)}</span>${isExpr(c)?XB:""}</div><div class="phrase es">${esc(c.fes)}</div>${assocBlock(c)}`
     :`<div class="divider"></div><div class="word">${esc(c.en)}</div><div class="ipa">${esc(c.ipa)}</div><div class="phrase">${esc(c.fen)}</div><button class="speak" onclick="speak('${esc(c.en).replace(/'/g,"\\'")}. ${esc(c.fen).replace(/'/g,"\\'")}')">▶ Escuchar</button>${assocBlock(c)}`;
@@ -790,8 +852,6 @@ function trainReveal(){
 }
 function trainNext(){
   const c=byId(tPool.shift());
-  c.seen=(c.seen||0)+1;
-  touchStreak();save();
   tPool.push(c.id); // vuelve al final de la cola
   trainCard();
 }
@@ -891,7 +951,7 @@ function exportData(){
   const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
-  a.download="tarjetero-"+today()+".json";
+  a.download="tavi-"+today()+".json";
   a.click();
 }
 function copyData(){
@@ -907,7 +967,7 @@ function importBatch(){
       if(!c.id)return;
       const ex=byId(c.id);
       if(!ex&&c.en&&c.es){
-        S.cards.push({id:c.id,en:c.en,es:c.es,sense:c.sense||"",ipa:c.ipa||"",fen:c.fen||"",fes:c.fes||"",assoc:c.assoc||null,st:"pending",due:null,seen:0,earned:0});
+        S.cards.push({id:c.id,en:c.en,es:c.es,sense:c.sense||"",ipa:c.ipa||"",fen:c.fen||"",fes:c.fes||"",assoc:c.assoc||null,st:"pending",due:null,seen:0,earned:0,locked:0});
         added++;
       }else if(ex&&c.assoc){
         ex.assoc=c.assoc;upd++;
