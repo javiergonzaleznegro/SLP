@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0C1B2A">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="apple-touch-icon" href="icon-180-v2.png">
 <title>Bitácora SLP</title>
 <style>
 :root{
@@ -51,6 +51,7 @@ h2{font-family:var(--disp);font-weight:500;letter-spacing:.14em;text-transform:u
 .pipeline{display:flex;align-items:center;justify-content:space-between;gap:6px;border:1px dashed var(--line);border-radius:12px;padding:10px 14px;margin:-6px 0 16px;font-size:13px;color:var(--faded);flex-wrap:wrap}
 .pipeline b{color:var(--ivory);font-family:var(--disp);font-size:16px;margin-left:3px}
 .version{text-align:center;font-family:var(--disp);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--line);margin-top:22px}
+.version span{text-transform:none}
 
 /* ---------- botones ---------- */
 .menu{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
@@ -282,30 +283,56 @@ const SEED = [
 /* ================= NIVELES ================= */
 /* st: pending → learning → d1 → w1 → w2 → m1 → m2 → done
    Dirección: la 1ª comprobación de cada nivel es EN→ES; la 2ª, ES→EN */
+/* Ciclo: pending → learning → d1 → d2 → w1 → w2 → m1 → m2 → done
+   Dos comprobaciones por nivel: 1ª ES→EN, 2ª EN→ES.
+   gap = días hasta la SIGUIENTE comprobación tras acertar.
+   En el nivel "1 día" se deja un día entero de margen (2 días). */
 const LV = {
-  d1:{label:"1 día",       chev:2, dir:"en", next:"w1",  gap:7,  pts:1,  keep:1},
-  w1:{label:"1 semana · 1ª",chev:3, dir:"en", next:"w2",  gap:7,  pts:0,  keep:7},
-  w2:{label:"1 semana · 2ª",chev:3, dir:"es", next:"m1",  gap:30, pts:3,  keep:7},
-  m1:{label:"1 mes · 1ª",   chev:4, dir:"en", next:"m2",  gap:30, pts:0,  keep:30},
-  m2:{label:"1 mes · 2ª",   chev:4, dir:"es", next:"done",gap:0,  pts:10, keep:30}
+  d1:{label:"1 día · 1ª",   chev:2, dir:"es", next:"d2",  gap:2,  keep:2},
+  d2:{label:"1 día · 2ª",   chev:2, dir:"en", next:"w1",  gap:7,  keep:2},
+  w1:{label:"1 semana · 1ª",chev:3, dir:"es", next:"w2",  gap:7,  keep:7},
+  w2:{label:"1 semana · 2ª",chev:3, dir:"en", next:"m1",  gap:30, keep:7},
+  m1:{label:"1 mes · 1ª",   chev:4, dir:"es", next:"m2",  gap:30, keep:30},
+  m2:{label:"1 mes · 2ª",   chev:4, dir:"en", next:"done",gap:0,  keep:30}
 };
+/* Puntos ACUMULADOS que corresponden a cada estado (palabra suelta).
+   Se cobran al completar cada nivel: 1 día = 1, 1 semana = +3, 1 mes = +10.
+   Las expresiones largas (4+ palabras) valen el doble. */
+const CREDIT = {pending:0, learning:0, d1:0, d2:0, w1:1, w2:1, m1:4, m2:4, done:14};
+const creditFor=(c,st)=>(CREDIT[st]||0)*(isExpr(c)?2:1);
+/* Ajusta el total de puntos al crédito que corresponde al nuevo estado.
+   Devuelve la diferencia (negativa si se retrocede y se pierden puntos). */
+function setCredit(c,st){
+  const target=creditFor(c,st);
+  const delta=target-(c.earned||0);
+  c.earned=target;
+  S.pts=Math.max(0,S.pts+delta);
+  return delta;
+}
 const DEMOTES = {
   d1:[["learning","Aprendiendo"]],
+  d2:[["d1","1 día"],["learning","Aprendiendo"]],
   w1:[["d1","1 día"],["learning","Aprendiendo"]],
   w2:[["d1","1 día"],["learning","Aprendiendo"]],
   m1:[["w1","1 semana"],["d1","1 día"],["learning","Aprendiendo"]],
   m2:[["w1","1 semana"],["d1","1 día"],["learning","Aprendiendo"]]
 };
+/* Días hasta la primera comprobación al entrar (o volver) a un nivel */
+const ENTRY_GAP={d1:2, d2:2, w1:7, w2:7, m1:30, m2:30};
 
 /* ================= ESTADO ================= */
 const KEY="bitacora-slp-v1";
-const VERSION="1.9";
+const VERSION="2.3";
 let S;
 /* Doble puntuación SOLO para expresiones largas (4+ palabras), cuya frase de
    ejemplo también es larga. Dos o tres palabras puntúan como una palabra. */
 const isExpr=c=>c.en.trim().split(/\s+/).filter(Boolean).length>=4;
 function migrate(){
-  S.cards.forEach(c=>{if(c.seen==null)c.seen=0;});
+  S.cards.forEach(c=>{
+    if(c.seen==null)c.seen=0;
+    // Crédito de puntos por ficha (para poder devolverlos al retroceder)
+    if(c.earned==null)c.earned=creditFor(c,c.st);
+  });
   // Las fichas del deck toman siempre la asociación más reciente del archivo.
   SEED.forEach(s=>{
     if(s.assoc){const c=S.cards.find(x=>x.id===s.id);if(c)c.assoc=s.assoc;}
@@ -320,7 +347,7 @@ function logDay(p,d){
 function syncSeed(){
   let added=0;
   SEED.forEach(c=>{
-    if(!S.cards.find(x=>x.id===c.id)){S.cards.push({...c,st:"pending",due:null,seen:0});added++;}
+    if(!S.cards.find(x=>x.id===c.id)){S.cards.push({...c,st:"pending",due:null,seen:0,earned:0});added++;}
   });
   if(!S.hist)S.hist={};
   migrate();
@@ -332,7 +359,7 @@ function load(){
     const raw=localStorage.getItem(KEY);
     if(raw){S=JSON.parse(raw);syncSeed();return;}
   }catch(e){}
-  S={cards:SEED.map(c=>({...c,st:"pending",due:null,seen:0})),pts:0,streak:0,last:null,hist:{}};
+  S={cards:SEED.map(c=>({...c,st:"pending",due:null,seen:0,earned:0})),pts:0,streak:0,last:null,hist:{}};
   save();
 }
 function save(){
@@ -424,14 +451,14 @@ function chevrons(n,star){
   h+='<i class="star '+(star?"on":"")+'"></i></div>';
   return h;
 }
-function levelRow(c,pill){
+function levelRow(c,pill,extra){
   const st=c.st;
   let n=0,star=false,txt="";
   if(st==="learning"){n=1;txt="Aprendiendo";}
   else if(LV[st]){n=LV[st].chev;txt=LV[st].label;}
   else if(st==="done"){n=4;star=true;txt="Dominada";}
   const p=pill?'<span class="dirpill">'+pill+'</span>':'';
-  return '<div class="levelrow">'+chevrons(n,star)+'<span class="lvltxt">'+txt+'</span>'+p+'</div>';
+  return '<div class="levelrow">'+chevrons(n,star)+'<span class="lvltxt">'+txt+'</span>'+p+(extra||"")+'</div>';
 }
 
 /* ---------- HOME ---------- */
@@ -463,7 +490,7 @@ function home(){
     <button class="big" onclick="progressView('d')"><span>Progreso</span><span class="n">▤</span></button>
     <button class="big" onclick="dataView()"><span>Datos y copia de seguridad</span><span class="n">›</span></button>
   </div>
-  <p class="version">Bitácora SLP · v${VERSION}</p>`;
+  <p class="version">Bitácora SLP · <span>v${VERSION}</span></p>`;
 }
 
 /* ---------- REPASO ---------- */
@@ -531,30 +558,30 @@ function reveal(){
 function pass(){
   const c=byId(queue.shift());
   const lv=LV[c.st];
-  const gained=lv.pts*(isExpr(c)?2:1);
   touchStreak();sesOk++;
-  if(lv.next==="done"){
-    c.st="done";c.due=null;
-  }else{
-    c.st=lv.next;c.due=addDays(lv.gap);
-  }
-  if(gained>0)S.pts+=gained;
-  logDay(gained,c.st==="done"?1:0);
+  if(lv.next==="done"){c.st="done";c.due=null;}
+  else{c.st=lv.next;c.due=addDays(lv.gap);}
+  const delta=setCredit(c,c.st);
+  logDay(delta,c.st==="done"?1:0);
   save();
-  if(c.st==="done")toast("★ Dominada · +"+gained+" puntos");
-  else if(gained>0)toast("+"+gained+(gained===1?" punto":" puntos")+" · siguiente en "+lv.gap+" días");
+  if(c.st==="done")toast("★ Dominada · +"+delta+" puntos");
+  else if(delta>0)toast("+"+delta+(delta===1?" punto":" puntos")+" · siguiente en "+lv.gap+" días");
   else toast("✓ Siguiente comprobación en "+lv.gap+" días");
   question();
 }
 function fail(){
   const c=byId(queue[0]);
   const lv=LV[c.st];
-  let opts=`<button class="ghost" onclick="keepLevel()">Mantener en ${lv.label.split(" ·")[0]} · repito en ${lv.keep===1?"1 día":lv.keep+" días"}</button>`;
+  const cost=st=>{
+    const d=creditFor(c,st)-(c.earned||0);
+    return d<0?' <span style="opacity:.8">('+d+" pts)</span>":"";
+  };
+  let opts=`<button class="ghost" onclick="keepLevel()">↻ Repetir · te la pregunto en ${lv.keep} días</button>`;
   DEMOTES[c.st].forEach(([st,name])=>{
-    opts+=`<button class="ghost" onclick="demote('${st}')">Bajar a ${name}</button>`;
+    opts+=`<button class="ghost" onclick="demote('${st}')">‹ Retroceder a ${name}${cost(st)}</button>`;
   });
   document.getElementById("controls").innerHTML=
-    '<p class="hint" style="text-align:center;margin-bottom:10px">Sin puntos. ¿Qué hacemos con ella?</p>'+
+    '<p class="hint" style="text-align:center;margin-bottom:10px">Retroceder descuenta los puntos de esa palabra; los recuperas cuando vuelvas a superarla.</p>'+
     '<div class="menu">'+opts+'</div>';
 }
 function keepLevel(){
@@ -565,22 +592,26 @@ function keepLevel(){
 function demote(st){
   const c=byId(queue.shift());
   c.st=st;
-  c.due=st==="learning"?null:addDays(st==="d1"?1:7);
-  touchStreak();sesKo++;save();question();
+  c.due=st==="learning"?null:addDays(ENTRY_GAP[st]||7);
+  const delta=setCredit(c,st);
+  if(delta)logDay(delta,0);
+  touchStreak();sesKo++;save();
+  if(delta<0)toast(delta+" puntos · recuperables");
+  question();
 }
 
 /* ---------- PROGRESO ---------- */
 const MESES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 function bars(data,labels,stars){
   const W=480,H=140;
-  const max=Math.max(1,...data);
+  const max=Math.max(1,...data.map(v=>Math.max(0,v)));
   const bw=W/data.length;
   const w=Math.min(bw-6,40);
   let s='<svg viewBox="0 0 '+W+' '+(H+26)+'" style="width:100%;display:block">';
   data.forEach((v,i)=>{
-    const h=v?Math.max(3,Math.round(v/max*(H-34))):3;
+    const h=v>0?Math.max(3,Math.round(v/max*(H-34))):3;
     const x=i*bw+(bw-w)/2, y=H-h;
-    s+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="#C9A063" opacity="'+(v?0.95:0.15)+'"/>';
+    s+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="'+(v<0?"#C75B4E":"#C9A063")+'" opacity="'+(v?0.95:0.15)+'"/>';
     if(v)s+='<text x="'+(i*bw+bw/2)+'" y="'+(y-5)+'" text-anchor="middle" font-size="11" fill="#EFE7D6">'+v+'</text>';
     if(stars[i])s+='<text x="'+(i*bw+bw/2)+'" y="'+(y-19)+'" text-anchor="middle" font-size="10" fill="#C9A063">'+"★".repeat(Math.min(stars[i],3))+(stars[i]>3?"+":"")+'</text>';
     s+='<text x="'+(i*bw+bw/2)+'" y="'+(H+18)+'" text-anchor="middle" font-size="10" fill="#7FA3C0">'+labels[i]+'</text>';
@@ -652,19 +683,19 @@ function progressView(tab){
   </div>
   <h2>En travesía</h2>
   <p class="sub">Fichas esperando su comprobación. No se pueden repasar antes de tiempo.</p>
-  <div class="pipeline" style="margin-top:12px"><span>1 día <b>${S.cards.filter(c=>c.st==="d1").length}</b></span><span>1 semana <b>${S.cards.filter(c=>c.st==="w1"||c.st==="w2").length}</b></span><span>1 mes <b>${S.cards.filter(c=>c.st==="m1"||c.st==="m2").length}</b></span></div>`+backBtn();
+  <div class="pipeline" style="margin-top:12px"><span>1 día <b>${S.cards.filter(c=>c.st==="d1"||c.st==="d2").length}</b></span><span>1 semana <b>${S.cards.filter(c=>c.st==="w1"||c.st==="w2").length}</b></span><span>1 mes <b>${S.cards.filter(c=>c.st==="m1"||c.st==="m2").length}</b></span></div>`+backBtn();
 }
 
 /* ---------- APRENDIENDO ---------- */
 function learningList(){
   const list=S.cards.filter(c=>c.st==="learning");
-  let h=topBack()+'<h2 style="margin-top:6px">Aprendiendo</h2><p class="sub">Estudia estas fichas. Cuando tengas una memorizada, márcala y mañana te la preguntaré de inglés a español.</p>';
+  let h=topBack()+'<h2 style="margin-top:6px">Aprendiendo</h2><p class="sub">Estudia estas fichas. Cuando tengas una memorizada, márcala y dentro de dos días te la preguntaré de español a inglés.</p>';
   if(list.length>1)h+='<div class="menu" style="margin-top:14px"><button class="primary" onclick="trainStart()">🎯 Entrenar estas '+list.length+' fichas</button></div>';
   else h+='<br>';
   if(!list.length)h+='<div class="empty">No hay fichas en estudio.<br>Añade palabras nuevas al cuaderno.</div>';
   list.forEach(c=>{
     const seen=c.seen?'<span class="seen">'+c.seen+' 🏋️</span>':'';
-    h+=`<div class="card">${levelRow(c).replace('</div>',seen+'</div>')}
+    h+=`<div class="card">${levelRow(c,null,seen)}
       <div class="word">${esc(c.en)}</div><div class="ipa">${esc(c.ipa)}</div>
       <div><span class="sense">${esc(c.sense)}</span>${isExpr(c)?XB:""}</div>
       <div class="phrase">${esc(c.fen)}</div>
@@ -684,12 +715,12 @@ function known(id){
   const b=document.getElementById("k-"+id);
   if(b.dataset.c){
     const c=byId(id);
-    c.st="d1";c.due=addDays(1);
+    c.st="d1";c.due=addDays(2);
     touchStreak();save();
-    toast("Te la pregunto mañana");
+    toast("Te la pregunto en dos días");
     learningList();
   }else{
-    b.dataset.c="1";b.textContent="¿Seguro? Te la pregunto mañana";
+    b.dataset.c="1";b.textContent="¿Seguro? Te la pregunto en dos días";
     b.style.borderColor="var(--brass)";b.style.color="var(--brass)";
   }
 }
@@ -745,9 +776,9 @@ function trainNext(){
 }
 function trainGot(){
   const c=byId(tPool.shift());
-  c.st="d1";c.due=addDays(1);
+  c.st="d1";c.due=addDays(2);
   touchStreak();save();
-  toast("Aprendida · te la pregunto mañana");
+  toast("Aprendida · te la pregunto en dos días");
   trainCard();
 }
 
@@ -788,7 +819,7 @@ function skipCard(id){
 /* ---------- DATOS ---------- */
 function dataView(){
   const done=S.cards.filter(c=>c.st==="done").length;
-  const inplay=S.cards.filter(c=>["learning","d1","w1","w2","m1","m2"].includes(c.st)).length;
+  const inplay=S.cards.filter(c=>["learning","d1","d2","w1","w2","m1","m2"].includes(c.st)).length;
   const nexpr=S.cards.filter(isExpr).length;
   app.innerHTML=`
   <h2>Datos</h2>
@@ -848,7 +879,7 @@ function importBatch(){
       if(!c.id)return;
       const ex=byId(c.id);
       if(!ex&&c.en&&c.es){
-        S.cards.push({id:c.id,en:c.en,es:c.es,sense:c.sense||"",ipa:c.ipa||"",fen:c.fen||"",fes:c.fes||"",assoc:c.assoc||null,st:"pending",due:null,seen:0});
+        S.cards.push({id:c.id,en:c.en,es:c.es,sense:c.sense||"",ipa:c.ipa||"",fen:c.fen||"",fes:c.fes||"",assoc:c.assoc||null,st:"pending",due:null,seen:0,earned:0});
         added++;
       }else if(ex&&c.assoc){
         ex.assoc=c.assoc;upd++;
