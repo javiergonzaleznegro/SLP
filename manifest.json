@@ -1,7 +1,7 @@
 {
-  "name": "Bitácora SLP",
-  "short_name": "Bitácora SLP",
-  "description": "Cuaderno de vocabulario para el examen SLP 3.3.3.3 (STANAG 6001).",
+  "name": "Tarjetero de vocabulario de inglés",
+  "short_name": "Tarjetero",
+  "description": "Tarjetero de vocabulario de inglés para el examen SLP 3.3.3.3 (STANAG 6001).",
   "lang": "es",
   "start_url": "./",
   "scope": "./",

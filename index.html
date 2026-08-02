@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0C1B2A">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180-v2.png">
-<title>Bitácora SLP</title>
+<title>Tarjetero de vocabulario de inglés</title>
 <style>
 :root{
   --ink:#0C1B2A;        /* azul carta náutica, fondo */
@@ -32,7 +32,7 @@ body{
 }
 .wrap{max-width:520px;margin:0 auto;padding:0 16px}
 header{padding:18px 0 10px;text-align:center;border-bottom:1px solid var(--line)}
-.brand{font-family:var(--disp);letter-spacing:.32em;font-size:13px;color:var(--brass);text-transform:uppercase}
+.brand{font-family:var(--disp);letter-spacing:.22em;font-size:13px;line-height:1.4;color:var(--brass);text-transform:uppercase}
 .brand small{display:block;letter-spacing:.18em;color:var(--faded);font-size:10px;margin-top:4px}
 h2{font-family:var(--disp);font-weight:500;letter-spacing:.14em;text-transform:uppercase;font-size:15px;color:var(--brass);margin:22px 0 12px}
 .sub{color:var(--faded);font-size:14px;line-height:1.5}
@@ -93,6 +93,8 @@ button{font-family:var(--body);cursor:pointer;border:none;border-radius:14px;fon
 .toast.show{opacity:1}
 textarea{width:100%;min-height:110px;background:var(--ink);border:1px solid var(--line);border-radius:12px;
   color:var(--ivory);font-family:Menlo,monospace;font-size:12px;padding:10px;margin:8px 0}
+input[type=date]{width:100%;background:var(--ink);border:1px solid var(--line);border-radius:12px;
+  color:var(--ivory);font-family:var(--body);font-size:16px;padding:12px;margin:10px 0 4px}
 .hidden{display:none}
 .assocbtn{background:transparent;border:1px dashed var(--brass);color:var(--brass);border-radius:24px;
   padding:8px 16px;font-size:14px;margin-top:12px;width:100%}
@@ -110,7 +112,7 @@ textarea{width:100%;min-height:110px;background:var(--ink);border:1px solid var(
 <body>
 <div class="wrap">
   <header>
-    <div class="brand">Bitácora SLP<small>Cuaderno de vocabulario · 3.3.3.3</small></div>
+    <div class="brand">Tarjetero de vocabulario<small>Inglés · SLP 3.3.3.3</small></div>
   </header>
   <main id="app"></main>
 </div>
@@ -267,6 +269,12 @@ const SEED = [
 {id:"momentum",en:"momentum",es:"impulso, inercia",sense:"fuerza que mantiene algo en marcha",ipa:"/məˈmentəm/",fen:"The team lost momentum in the second half.",fes:"El equipo perdió impulso en la segunda parte."},
 {id:"stamina",en:"stamina",es:"aguante, fondo físico",sense:"resistencia sostenida",ipa:"/ˈstæmɪnə/",fen:"Long matches demand real stamina.",fes:"Los partidos largos exigen mucho fondo físico.",assoc:{bridge:"está mina",scene:"Un minero corre una maratón por un túnel interminable gritando «¡ESTÁ MINA no se acaba nunca!», y sigue y sigue, horas, sin quedarse sin aire.",funny:"Va repartiendo picos a otros corredores que caen agotados mientras él ni suda.",recall:"Ese aguante para seguir sin fin es stamina: fondo físico, resistencia.",why:"«stamina» suena a «está mina»; correr sin parar fija «aguante»."}},
 {id:"streamline",en:"streamline",es:"agilizar, optimizar",sense:"simplificar un proceso",ipa:"/ˈstriːmlaɪn/",fen:"We streamlined the whole procedure.",fes:"Agilizamos todo el procedimiento."},
+{id:"there-is-no-denying",en:"there is no denying that",es:"no se puede negar que",sense:"introducir un hecho innegable",ipa:"/ðeər ɪz nəʊ dɪˈnaɪɪŋ ðæt/",fen:"There is no denying that discipline pays off.",fes:"No se puede negar que la disciplina da fruto."},
+{id:"all-things-considered",en:"all things considered",es:"bien mirado, en conjunto",sense:"valoración final tras sopesar todo",ipa:"/ɔːl θɪŋz kənˈsɪdəd/",fen:"All things considered, it was a success.",fes:"Bien mirado, fue un éxito."},
+{id:"for-the-sake-of",en:"for the sake of",es:"en aras de, por el bien de",sense:"con un fin concreto",ipa:"/fə ðə ˈseɪk əv/",fen:"For the sake of clarity, I will keep it short.",fes:"En aras de la claridad, seré breve."},
+{id:"needless-to-say",en:"needless to say",es:"huelga decir, no hace falta decir",sense:"introducir algo obvio",ipa:"/ˈniːdləs tə seɪ/",fen:"Needless to say, preparation is everything.",fes:"Huelga decir que la preparación lo es todo."},
+{id:"to-my-mind",en:"to my mind",es:"a mi parecer",sense:"marcar una opinión personal",ipa:"/tə maɪ ˈmaɪnd/",fen:"To my mind, the plan is too risky.",fes:"A mi parecer, el plan es demasiado arriesgado."},
+{id:"push-through",en:"push through",es:"sacar adelante, perseverar",sense:"seguir pese a la dificultad",ipa:"/pʊʃ ˈθruː/",fen:"You have to push through the hardest days.",fes:"Hay que sacar adelante los días más duros."},
 {id:"uphold",en:"uphold",es:"defender, mantener, hacer cumplir",sense:"una ley, un valor o una decisión",ipa:"/ʌpˈhəʊld/",fen:"Every officer swears to uphold the law.",fes:"Todo oficial jura defender la ley.",assoc:{bridge:"up + hold (sostener en alto)",scene:"En lo alto de la muralla, el caballero SOSTIENE EN ALTO el estandarte con la ley grabada, aguantando el vendaval con los dos brazos para que no caiga ni se doble. Pase lo que pase, lo mantiene arriba.",funny:"Se le duermen los brazos, pero antes que bajar el estandarte deja que se lo lleve por los aires a él con banderín y todo.",recall:"Sostener en alto y hacer cumplir una ley o un valor es uphold: defender, mantener.",why:"up + hold = «sostener en alto»; el caballero que no deja caer el estandarte fija «mantener/defender»."}},
 {id:"surrender",en:"surrender",es:"rendirse, entregarse",sense:"deponer las armas",ipa:"/səˈrendə/",fen:"The garrison refused to surrender.",fes:"La guarnición se negó a rendirse.",assoc:{bridge:"-render ≈ rendir(se)",scene:"Sobre la muralla del castillo, el comandante enemigo ondea una bandera blanca enorme y arroja su espada al foso: se RINDE y entrega la plaza.",funny:"Lanza también el casco, la capa y hasta al dragón, que cae al foso con un chapoteo enorme.",recall:"Bajar las armas y entregarse es surrender: rendirse.",why:"surrender lleva dentro «render» ≈ «rendir(se)»; la bandera blanca fija el significado."}},
 {id:"besiege",en:"besiege",es:"asediar, sitiar",sense:"cercar una plaza",ipa:"/bɪˈsiːdʒ/",fen:"Enemy forces besieged the fortress for weeks.",fes:"Las fuerzas enemigas asediaron la fortaleza durante semanas.",assoc:{bridge:"be + siege (asedio)",scene:"El ejército rodea el castillo por completo y monta el ASEDIO: nadie entra ni sale, las provisiones se acaban dentro. Es el paso previo a abrir la brecha en la muralla.",funny:"Los sitiadores se aburren tanto esperando que montan un puestecillo de perritos calientes frente a la puerta.",recall:"Rodear y cercar una plaza para rendirla es besiege: asediar, sitiar.",why:"be + siege = «poner asedio»; el cerco al castillo, antes de la brecha, fija «asediar»."}},
@@ -322,7 +330,7 @@ const ENTRY_GAP={d1:2, d2:2, w1:7, w2:7, m1:30, m2:30};
 
 /* ================= ESTADO ================= */
 const KEY="bitacora-slp-v1";
-const VERSION="2.4";
+const VERSION="2.7";
 let S;
 /* Doble puntuación SOLO para expresiones largas (4+ palabras), cuya frase de
    ejemplo también es larga. Dos o tres palabras puntúan como una palabra. */
@@ -502,7 +510,7 @@ function home(){
     <button class="big" onclick="progressView('d')"><span>Progreso</span><span class="n">▤</span></button>
     <button class="big" onclick="dataView()"><span>Datos y copia de seguridad</span><span class="n">›</span></button>
   </div>
-  <p class="version">Bitácora SLP · <span>v${VERSION}</span></p>`;
+  <p class="version">Tarjetero · <span>v${VERSION}</span></p>`;
 }
 
 /* ---------- REPASO ---------- */
@@ -782,7 +790,8 @@ function trainReveal(){
 }
 function trainNext(){
   const c=byId(tPool.shift());
-  c.seen=(c.seen||0)+1;save();
+  c.seen=(c.seen||0)+1;
+  touchStreak();save();
   tPool.push(c.id); // vuelve al final de la cola
   trainCard();
 }
@@ -852,7 +861,14 @@ function dataView(){
   <div class="menu">
     <button class="primary" onclick="importBatch()">Añadir tanda nueva</button>
     <button class="ghost" onclick="restoreBackup()">Restaurar copia completa</button>
-  </div>`+backBtn();
+  </div>
+  <h2>Historial de estudio</h2>
+  <p class="sub">Si estudiaste un día y no quedó registrado (sin conexión, en papel o solo entrenando), márcalo aquí para que cuente en la racha.</p>
+  <input type="date" id="fixday" max="${today()}" value="${today()}">
+  <div class="menu">
+    <button class="primary" onclick="markDay()">Marcar ese día como estudiado</button>
+  </div>
+  <p class="hint">Racha actual: <b style="color:var(--brass)">${streakCount()}</b> días · Días registrados: ${Object.keys(S.hist||{}).length}</p>`+backBtn();
 }
 function masteredList(){
   const list=S.cards.filter(c=>c.st==="done");
@@ -875,7 +891,7 @@ function exportData(){
   const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
-  a.download="bitacora-slp-"+today()+".json";
+  a.download="tarjetero-"+today()+".json";
   a.click();
 }
 function copyData(){
@@ -910,6 +926,18 @@ function restoreBackup(){
   }catch(e){toast("Formato no válido");}
 }
 
+function markDay(){
+  const v=document.getElementById("fixday").value;
+  if(!v){toast("Elige una fecha");return;}
+  if(v>today()){toast("No se puede marcar un día futuro");return;}
+  if(!S.hist)S.hist={};
+  if(S.hist[v]){toast("Ese día ya estaba registrado");return;}
+  S.hist[v]={p:0,d:0};
+  S.streak=streakCount();
+  save();
+  toast("Día registrado · racha "+S.streak);
+  dataView();
+}
 const backBtn=()=>'<button class="back" onclick="home()">‹ Volver al panel</button>';
 const topBack=(fn)=>'<button class="back" style="padding:10px 0 4px" onclick="'+(fn||"home()")+'">‹ Volver al panel</button>';
 
