@@ -322,7 +322,7 @@ const ENTRY_GAP={d1:2, d2:2, w1:7, w2:7, m1:30, m2:30};
 
 /* ================= ESTADO ================= */
 const KEY="bitacora-slp-v1";
-const VERSION="2.3";
+const VERSION="2.4";
 let S;
 /* Doble puntuación SOLO para expresiones largas (4+ palabras), cuya frase de
    ejemplo también es larga. Dos o tres palabras puntúan como una palabra. */
@@ -337,6 +337,8 @@ function migrate(){
   SEED.forEach(s=>{
     if(s.assoc){const c=S.cards.find(x=>x.id===s.id);if(c)c.assoc=s.assoc;}
   });
+  if(!S.hist)S.hist={};
+  S.streak=streakCount();
 }
 function logDay(p,d){
   if(!S.hist)S.hist={};
@@ -387,13 +389,23 @@ function addDays(n){
   const d=new Date();d.setDate(d.getDate()+n);
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
+/* La racha se DEDUCE de los días con actividad registrados en el historial,
+   así sobrevive a restaurar una copia de seguridad. */
+function dayKey(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function streakCount(){
+  if(!S.hist)return 0;
+  const d=new Date();
+  if(!S.hist[dayKey(d)])d.setDate(d.getDate()-1); // si hoy aún no hay actividad, cuenta desde ayer
+  let n=0;
+  while(S.hist[dayKey(d)]){n++;d.setDate(d.getDate()-1);}
+  return n;
+}
 function touchStreak(){
+  if(!S.hist)S.hist={};
   const t=today();
-  if(S.last===t)return;
-  const y=new Date();y.setDate(y.getDate()-1);
-  const yd=y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0");
-  S.streak=(S.last===yd)?S.streak+1:1;
+  if(!S.hist[t])S.hist[t]={p:0,d:0};
   S.last=t;
+  S.streak=streakCount();
 }
 const dueCards=()=>S.cards.filter(c=>LV[c.st]&&c.due&&c.due<=today());
 const byId=id=>S.cards.find(c=>c.id===id);
