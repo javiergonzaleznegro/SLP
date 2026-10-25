@@ -377,7 +377,17 @@ const ENTRY_GAP={d1:2, d2:2, w1:7, w2:7, m1:30, m2:30};
 
 /* ================= ESTADO ================= */
 const KEY="bitacora-slp-v1";
-const VERSION="3.10";
+/* VERSIONADO vX.Y.Z — se sigue a rajatabla:
+     X  lo decide Javi, avisando expresamente. No se toca por iniciativa propia.
+     Y  SOLO cambios sustanciales: herramienta nueva, vista nueva, rediseño
+        completo. Es raro. Ampliar, completar o corregir algo que ya existe NO es Y.
+     Z  todo lo demás, que es casi siempre. No tiene techo: tras 3.9.9 va 3.9.10.
+   En la duda, Z. Si parece que toca Y, se dice y se espera confirmación.
+   Cada entrega sube exactamente uno de los tres, y el nombre de caché del
+   service worker sube en la misma entrega.
+   Nota: hasta la 3.9 la app llevó solo dos números, saltándose esta norma. El
+   tercero arranca aquí; los números ya publicados no se reescriben. */
+const VERSION="3.9.1";
 let S;
 /* Doble puntuación SOLO para expresiones largas (4+ palabras), cuya frase de
    ejemplo también es larga. Dos o tres palabras puntúan como una palabra. */
