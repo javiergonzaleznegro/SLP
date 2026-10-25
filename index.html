@@ -17,6 +17,7 @@
   --ivory:#EFE7D6;      /* texto principal */
   --faded:#7FA3C0;      /* texto secundario */
   --brass:#C9A063;      /* latón: acento e instrumento */
+  --fav:#F5C84B;        /* amarillo señal: las palabras del día */
   --ok:#4CAF7D;         /* verde señal */
   --bad:#C75B4E;        /* rojo señal */
   --disp:Futura,'Avenir Next Condensed','Trebuchet MS',sans-serif;
@@ -122,6 +123,24 @@ input[type=search]{-webkit-appearance:none;appearance:none}
 .amn:last-child{margin-bottom:0}
 .amn span{display:block;font-family:var(--disp);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);margin-bottom:3px}
 .seen{font-family:var(--disp);font-size:10px;letter-spacing:.1em;color:var(--faded);margin-left:auto;text-transform:uppercase}
+/* ---- Palabras del día (favoritas) ---- */
+.rgt{margin-left:auto;display:flex;align-items:center;gap:10px}
+.rgt .seen{margin-left:0}
+.favbtn{flex:none;background:transparent;border:0;padding:0;margin:-14px -8px -14px 0;
+  font-size:21px;line-height:1;color:var(--faded);cursor:pointer;touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;min-width:48px;min-height:48px}
+.favbtn.on{color:var(--fav)}
+.card.fav{border-color:var(--fav);background:linear-gradient(180deg,#1b2c33 0%,var(--panel) 60%)}
+.card.fav .word{color:var(--fav)}
+.card.fav .lvltxt{color:var(--fav)}
+.favbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 4px;
+  border:1px solid var(--fav);border-radius:12px;padding:10px 14px;
+  background:rgba(245,200,75,.08);font-size:13px;color:var(--fav)}
+.favbar b{font-family:var(--disp);letter-spacing:.06em;font-weight:600}
+.favbar i{font-style:normal;color:var(--faded);font-size:12px}
+.favbar button{margin-left:auto;flex:none;background:transparent;border:1px solid var(--line);
+  color:var(--faded);border-radius:20px;padding:7px 14px;font-size:12px;min-height:36px;
+  touch-action:manipulation}
 .empty{text-align:center;color:var(--faded);padding:40px 10px;font-family:var(--serif);font-style:italic;font-size:16px;line-height:1.6}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -358,7 +377,7 @@ const ENTRY_GAP={d1:2, d2:2, w1:7, w2:7, m1:30, m2:30};
 
 /* ================= ESTADO ================= */
 const KEY="bitacora-slp-v1";
-const VERSION="3.9";
+const VERSION="3.10";
 let S;
 /* Doble puntuación SOLO para expresiones largas (4+ palabras), cuya frase de
    ejemplo también es larga. Dos o tres palabras puntúan como una palabra. */
@@ -875,16 +894,61 @@ function progressView(tab){
   <div class="pipeline" style="margin-top:12px"><span>1 día <b>${S.cards.filter(c=>c.st==="d1"||c.st==="d2").length}</b></span><span>1 semana <b>${S.cards.filter(c=>c.st==="w1"||c.st==="w2").length}</b></span><span>1 mes <b>${S.cards.filter(c=>c.st==="m1"||c.st==="m2").length}</b></span><span>retención <b>${S.cards.filter(c=>c.st==="done"&&c.due).length}</b></span></div>`+backBtn();
 }
 
+/* ---------- PALABRAS DEL DÍA (favoritas) ----------
+   Las tres que se eligen cada mañana en la lista HOARI para repasarlas durante
+   el día. Se marcan con ★, se quedan arriba del todo y salen resaltadas, para
+   poder recordar cuáles eran sin tener que apuntarlas aparte.
+   No se borran solas al cambiar el día: eso machacaría la selección a mitad de
+   una sesión de madrugada. Se quitan a mano, con el botón de la barra. */
+const FAV_OBJETIVO=3;
+const favCount=()=>S.cards.filter(c=>c.st==="learning"&&c.fav).length;
+const favBtn=c=>'<button class="favbtn'+(c.fav?' on':'')+'" onclick="toggleFav(\''+c.id+
+  '\',event)" aria-pressed="'+(c.fav?'true':'false')+'" aria-label="'+
+  (c.fav?'Quitar de las palabras del día':'Marcar como palabra del día')+'">'+
+  (c.fav?'★':'☆')+'</button>';
+function toggleFav(id,ev){
+  if(ev){ev.stopPropagation();ev.preventDefault();}
+  const c=byId(id);if(!c)return;
+  c.fav=!c.fav;
+  if(c.fav)c.favDay=today();else delete c.favDay;
+  save();
+  const n=favCount();
+  if(c.fav)toast(n<=FAV_OBJETIVO?"★ Palabra del día ("+n+" de "+FAV_OBJETIVO+")":"★ Ya llevas "+n+", más de las "+FAV_OBJETIVO+" de costumbre");
+  else toast("Fuera de las del día");
+  learningList();
+  if(c.fav)window.scrollTo(0,0);
+}
+function clearFav(){
+  S.cards.forEach(c=>{if(c.fav){c.fav=false;delete c.favDay;}});
+  save();toast("Lista del día vacía");learningList();
+}
+/* Si las marcadas son de otro día, se avisa en vez de borrarlas por sorpresa. */
+function favStaleLabel(){
+  const d=S.cards.filter(c=>c.st==="learning"&&c.fav).map(c=>c.favDay).filter(Boolean);
+  if(!d.length)return"";
+  const hoy=today(),viejo=d.filter(x=>x!==hoy).sort()[0];
+  if(!viejo)return"";
+  const p=viejo.split("-");
+  return'elegidas el '+p[2]+'/'+p[1];
+}
+
 /* ---------- APRENDIENDO ---------- */
 function learningList(){
-  const list=S.cards.filter(c=>c.st==="learning");
-  let h=topBack()+'<h2 style="margin-top:6px">Aprendiendo</h2><p class="sub">Estudia estas fichas. Cuando tengas una memorizada, márcala y dentro de dos días te la preguntaré de inglés a español.</p>';
+  /* Las del día primero. sort() es estable, así que el resto no se descoloca. */
+  const list=S.cards.filter(c=>c.st==="learning").sort((a,b)=>(b.fav?1:0)-(a.fav?1:0));
+  let h=topBack()+'<h2 style="margin-top:6px">Aprendiendo</h2><p class="sub">Estudia estas fichas. Cuando tengas una memorizada, márcala y dentro de dos días te la preguntaré de inglés a español.<br>Marca con ★ las '+FAV_OBJETIVO+' palabras del día: se quedan arriba y resaltadas.</p>';
+  const nf=favCount();
+  if(nf){
+    const st=favStaleLabel();
+    h+='<div class="favbar"><b>★ '+nf+' '+(nf===1?"palabra":"palabras")+' del día</b>'+
+       (st?'<i>'+st+'</i>':'')+'<button onclick="clearFav()">Quitar todas</button></div>';
+  }
   if(list.length>1)h+='<div class="menu" style="margin-top:14px"><button class="primary" onclick="trainStart()">🎯 Entrenar estas '+list.length+' fichas</button></div>';
   else h+='<br>';
   if(!list.length)h+='<div class="empty">No hay fichas en estudio.<br>Añade palabras nuevas al cuaderno.</div>';
   list.forEach(c=>{
     const seen=c.seen?'<span class="seen">'+c.seen+' 🏋️</span>':'';
-    h+=`<div class="card">${levelRow(c,null,seen)}
+    h+=`<div class="card${c.fav?" fav":""}">${levelRow(c,null,'<span class="rgt">'+seen+favBtn(c)+'</span>')}
       <div class="word">${esc(c.en)}</div><div class="ipa">${esc(c.ipa)}</div>
       <div><span class="sense">${esc(c.sense)}</span>${isExpr(c)?XB:""}</div>
       <div class="phrase">${esc(c.fen)}</div>
@@ -905,6 +969,9 @@ function known(id){
   if(b.dataset.c){
     const c=byId(id);
     c.st="d1";c.due=addDays(2);
+    /* Al salir de Aprendiendo deja de ser palabra del día: la ★ no pinta nada
+       fuera de esta lista y, si la ficha volviera, arrastraría una marca vieja. */
+    if(c.fav){c.fav=false;delete c.favDay;}
     touchStreak();save();
     toast("Te la pregunto en dos días");
     learningList();
@@ -918,7 +985,10 @@ function known(id){
 let tPool=[],tDir="en";
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function trainStart(){
-  tPool=shuffle(S.cards.filter(c=>c.st==="learning").map(c=>c.id));
+  /* El orden sigue siendo aleatorio, pero las palabras del día van delante. */
+  const L=S.cards.filter(c=>c.st==="learning");
+  tPool=shuffle(L.filter(c=>c.fav).map(c=>c.id))
+    .concat(shuffle(L.filter(c=>!c.fav).map(c=>c.id)));
   if(!tPool.length){app.innerHTML='<div class="empty">No hay fichas en estudio.</div>'+backBtn();return;}
   trainCard();
 }
@@ -936,8 +1006,8 @@ function trainCard(){
     :`<div class="word">${esc(c.es)}</div><div><span class="sense">${esc(c.sense)}</span>${isExpr(c)?XB:""}</div><div class="phrase es">${esc(c.fes)}</div>`;
   app.innerHTML=`
   <div class="progress">Entrenamiento · ${tPool.length} en cola</div>
-  <div class="card">
-    <div class="levelrow"><span class="lvltxt">${tDir==="en"?"EN → ES":"ES → EN"}</span>${c.seen?'<span class="seen">'+c.seen+' 🏋️</span>':''}</div>
+  <div class="card${c.fav?" fav":""}">
+    <div class="levelrow"><span class="lvltxt">${c.fav?"★ ":""}${tDir==="en"?"EN → ES":"ES → EN"}</span>${c.seen?'<span class="seen">'+c.seen+' 🏋️</span>':''}</div>
     ${front}
     <div id="tans" class="hidden"></div>
   </div>
