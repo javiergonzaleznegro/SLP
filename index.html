@@ -428,7 +428,7 @@ const KEY="bitacora-slp-v1";
    service worker sube en la misma entrega.
    Nota: hasta la 3.9 la app llevó solo dos números, saltándose esta norma. El
    tercero arranca aquí; los números ya publicados no se reescriben. */
-const VERSION="3.9.4";
+const VERSION="3.9.5";
 let S;
 /* Todas las fichas puntúan igual. Hasta la v3.9.2 las expresiones de 4+ palabras
    valían el doble; se quitó porque casi todas se forman con palabras simples
@@ -696,6 +696,8 @@ function question(){
       <div class="phrase es">${esc(c.fes)}</div>`;
   }
   app.innerHTML=`
+  <button class="back" onclick="home()">‹ Salir del repaso</button>
+  <p class="hint" style="margin-top:0">Cada respuesta valorada se guarda. Puedes continuar después con las pendientes.</p>
   <div class="progress">${qTotal-queue.length+1} de ${qTotal}</div>
   <div class="card">
     ${levelRow(c,pill)}
