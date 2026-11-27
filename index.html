@@ -428,7 +428,7 @@ const KEY="bitacora-slp-v1";
    service worker sube en la misma entrega.
    Nota: hasta la 3.9 la app llevó solo dos números, saltándose esta norma. El
    tercero arranca aquí; los números ya publicados no se reescriben. */
-const VERSION="3.9.5";
+const VERSION="3.9.6";
 let S;
 /* Todas las fichas puntúan igual. Hasta la v3.9.2 las expresiones de 4+ palabras
    valían el doble; se quitó porque casi todas se forman con palabras simples
@@ -779,15 +779,23 @@ function fail(){
     '<p class="hint" style="text-align:center;margin-bottom:10px">Retroceder descuenta los puntos de esa palabra; los recuperas cuando vuelvas a superarla.</p>'+
     '<div class="menu">'+opts+'</div>';
 }
+/* Un «No la sabía» en el repaso suma una repetición al contador 🏋️, igual que
+   cada «Mostrar» del entrenamiento, y así entra en «Las que más cuestan».
+   Se cuenta aquí y en demote(), que es donde el fallo queda registrado, y
+   DESPUÉS de snapshot(): deshacer la respuesta devuelve también el contador.
+   Los aciertos no suman a propósito: todas las fichas pasan por seis
+   comprobaciones, y contarlas llenaría la lista de palabras que ya sabes. */
 function keepLevel(){
   snapshot(byId(queue[0]));
   const c=byId(queue.shift());
+  c.seen=(c.seen||0)+1;
   c.due=addDays(c.st==="done"?30:LV[c.st].keep);
   touchStreak();sesKo++;save();question();
 }
 function demote(st){
   snapshot(byId(queue[0]));
   const c=byId(queue.shift());
+  c.seen=(c.seen||0)+1;          // fallo en el repaso: ver nota en keepLevel()
   c.st=st;
   c.due=st==="learning"?null:addDays(ENTRY_GAP[st]||7);
   const delta=setCredit(c,st);
@@ -957,7 +965,7 @@ function progressView(tab){
     </div>`;})()}
   ${(()=>{const d=S.cards.filter(c=>c.seen>0).sort((a,b)=>b.seen-a.seen).slice(0,8);
     if(!d.length)return "";
-    return '<h2>Las que más cuestan</h2><p class="sub">Repeticiones acumuladas en entrenamiento.</p>'+
+    return '<h2>Las que más cuestan</h2><p class="sub">Repeticiones de entrenamiento y fallos de repaso.</p>'+
       d.map(c=>'<div class="hitrow" onclick="showCard(\''+c.id+'\')"><b>'+esc(c.en)+'</b><span>'+esc(c.es)+'</span><i>'+c.seen+' 🏋️</i></div>').join("");})()}
   <h2>En travesía</h2>
   <p class="sub">Fichas esperando su comprobación. No se pueden repasar antes de tiempo.</p>
